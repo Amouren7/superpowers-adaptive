@@ -232,11 +232,14 @@ a2 数值更小，但**主要因为 T03 少做了一件事**（没有实施计�
 |---|---|
 | 热注入后当前 web 会话 | 该会话上下文里**直接出现** `<SUPERPOWERS>` + 完整入口（本机实时可见） |
 | 新的 headless 会话（`dsh --profile headless`，exit=0） | 让它逐字引用入口里 "No ceremony" 段落 → **原句正确引用**，证明第一轮就在上下文中 |
-| web / headless 两个 profile | 均已写入 `dependencies` + `bundles`，重启后由 bundles 正常装配 |
+| web / headless 两个 profile | 均已写入 `dependencies` + `bundles`；依赖指向**仓库里的** `.dsh-plugin/`，插件运行实例已确认从该路径加载 |
 
-**过程中踩到并记录的一个坑**：把包加进 profile 的 `bundles` 时，包**必须**声明 `dsh.bundle.patch`（自己的 `cordis.patch.yml`），否则 profile 直接启动失败：
-`profile bundle "@dsh-external/dsh-superpowers-adaptive" declares no dsh.bundle in its package.json`。
-本插件的 `package.json` 与 `cordis.patch.yml` 已按该契约写好（`dev_install_package` 当时只加了 bundles，所以先崩了一次，已修并复验 headless exit=0）。
+**过程中踩到并记录的两个坑**：
+
+1. 把包加进 profile 的 `bundles` 时，包**必须**声明 `dsh.bundle.patch`（自己的 `cordis.patch.yml`），否则 profile 直接启动失败：
+   `profile bundle "@dsh-external/dsh-superpowers-adaptive" declares no dsh.bundle in its package.json`。本插件的 `package.json` 与 `cordis.patch.yml` 已按该契约写好（`dev_install_package` 当时只加了 bundles，所以先崩了一次，已修并复验 headless exit=0）。
+2. **profile 的 `package.json` 不能带 BOM**：DSH 用 `JSON.parse` 读它，BOM 会让它报
+   `SyntaxError: Unexpected token '', "{ "name"... is not valid JSON` 而完全起不来。PowerShell 的 `Set-Content -Encoding UTF8` 正是会写 BOM 的那个（这次就是被它坑了一次，已改用 Node 写无 BOM UTF-8）。`dsh plugin --profile <p> add "file:..."` 也不可靠：它走 pnpm，会把带空格的路径截断成 `D:/Deepseek`。两个坑都写进了 `.dsh-plugin/README.md`。
 
 **仍未验证**：DSH 之外没有别的 harness 用这套机制；`SUPERPOWERS_PLUGIN_ROOT` 指向缺失目录时的降级路径只做了代码审查，没有实跑。
 

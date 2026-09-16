@@ -37,6 +37,11 @@ or, if the plugin manager is not available, add it to the profile by hand — `%
 
 then link it into the profile's `node_modules` (a junction on Windows) and restart DSH. The bundle must declare `dsh.bundle.patch` — it does (`cordis.patch.yml`), and a package added to `bundles` without that field makes the profile fail to boot.
 
+Two pitfalls that cost real time when installing this by hand:
+
+- **The profile's `package.json` must stay BOM-free.** DSH parses it with `JSON.parse`, which rejects a leading BOM: `SyntaxError: Unexpected token '', "{ "name"... is not valid JSON`. PowerShell's `Set-Content -Encoding UTF8` writes a BOM — use `Set-Content -Encoding utf8NoBOM` (PowerShell 7+), `[IO.File]::WriteAllText(...)`, or Node's `fs.writeFileSync(path, text, 'utf8')`.
+- `dsh plugin --profile <p> add "file:..."` runs pnpm, which mangles a path containing spaces (`Could not install from "D:/Deepseek"`). Hand-edit the manifest or install from a space-free path.
+
 No build step is required: `lib/index.js` is plain ESM with no runtime dependencies (`scripts/build.sh` only checks syntax and copies `src/` → `lib/`).
 
 ## Remove
