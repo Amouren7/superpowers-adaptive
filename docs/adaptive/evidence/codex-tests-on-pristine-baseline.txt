@@ -1,7 +1,7 @@
 ﻿# 两个 codex 套件在纯净上游基线 base-v6.3.0 上的同样结果（证明是环境预存失败，不是本轮引入）
 commit: b36e082
 ### tests/codex/test-package-codex-plugin.sh exit=1
-FileNotFoundError: [Errno 2] No such file or directory: '/d/Deepseek Project/superpowers-adaptive/base-v6.3.0/.codex-plugin/plugin.json'
+FileNotFoundError: [Errno 2] No such file or directory: '<workspace>/base-v6.3.0/.codex-plugin/plugin.json'
 
 ### tests/codex-plugin-sync/test-sync-to-codex-plugin.sh exit=1
 Help assertions...

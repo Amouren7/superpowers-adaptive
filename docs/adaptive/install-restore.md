@@ -28,18 +28,15 @@
 - adaptive.2 相对 adaptive.1：消解「入口说按需、子技能仍强制」的新旧流程冲突；新增风险升级清单、项目约束优先、分级验证下限、反仪式条款；修正 token 统计口径。详见 `change-note.md`。
 - `RELEASE-NOTES.md`、`docs/superpowers/plans|specs/*` 等历史记录保持原样未改写。
 
-## 二、当前环境状态（重要）
+## 二、这份包是怎么做出来的（作者环境，未受影响）
 
-你在本机**已安装**的东西**没有任何改动**：
+整个改造在**独立的 git 仓库与工作目录**里完成，作者机器上**已安装**的东西一件都没动：
 
-| 项 | 位置 | 状态 |
-|---|---|---|
-| 已装技能（43 个） | `C:\Users\28198\.agents\skills` | 未改动 |
-| Claude Code 侧技能副本 | `C:\Users\28198\.claude\skills` | 未改动 |
-| superpowers 插件（v6.2.0）与其 SessionStart 钩子 | `C:\Users\28198\.claude\plugins\superpowers`、`~/.claude/settings.json` | 未改动 |
-| 上游源码克隆 | `D:\Deepseek Project\.skill-setup\repos\superpowers` | 未改动（只读引用） |
+- 已安装的技能目录（用户级 `~/.agents/skills`、Claude Code 侧的 `~/.claude/skills`）——未改动；
+- 已安装的 Superpowers 插件及其 SessionStart 钩子（`~/.claude/plugins/superpowers`）与 `~/.claude/settings.json`——未改动；
+- 上游源码克隆（只读引用，fork 的 `upstream` remote 指向它）——未改动。
 
-本次所有改造都在独立工作目录 `D:\Deepseek Project\superpowers-adaptive\repo`（分支 `adaptive-flow`）。
+改造所在的仓库就是本仓库（分支 `adaptive-flow`）。行为实测全部在临时隔离目录里进行（每次运行独立的 `DSH_HOME`、空的 `DSH_AGENTS_HOME`、技能只装进场景自己的 `.dsh/skills`），因此**没有任何一步**读写你的真实安装目录。
 
 ## 三、通用预检查：先确认「插件根」，再谈复制
 
@@ -77,7 +74,7 @@ if ($nSkills -lt 10) { Write-Error "skills 看起来不完整（只找到 $nSkil
 
 ### 方式 1：交给 Claude Code 临时加载（不改动已安装版本）
 ```bash
-claude --plugin-dir "D:\Deepseek Project\superpowers-adaptive\repo"
+claude --plugin-dir "<workspace>\repo"
 ```
 `--plugin-dir` 只对本次会话生效，不写入你的插件配置，退出即还原。
 
@@ -173,12 +170,12 @@ bash "$dst\hooks\session-start" | Select-String 'SUPERPOWERS'
    # 只有当清单为空（目录是本次安装才建的）且目录已空时，才可以删这个目录本身
    if ((Get-ChildItem $dst -Force | Measure-Object).Count -eq 0 -and $m.added.Count -eq 0) { Remove-Item $dst -Force }
    ```
-3. **还原源码工作区**：`D:\Deepseek Project\superpowers-adaptive\repo` 是独立 git 仓库（remote 指向你本地的上游克隆，**没有**指向 GitHub）。要彻底丢弃：删除整个 `superpowers-adaptive` 目录即可；上游克隆与已安装环境不受影响。
+3. **还原源码工作区**：`<workspace>\repo` 是独立 git 仓库（remote 指向你本地的上游克隆，**没有**指向 GitHub）。要彻底丢弃：删除整个 `superpowers-adaptive` 目录即可；上游克隆与已安装环境不受影响。
 
 ## 七、升级到上游新版本（将来）
 
 ```powershell
-cd "D:\Deepseek Project\superpowers-adaptive\repo"
+cd "<workspace>\repo"
 git fetch origin            # origin = 你本地的上游克隆；也可换成 GitHub URL
 git diff HEAD..origin/main --stat -- skills/using-superpowers/SKILL.md
 ```
@@ -214,9 +211,4 @@ node verification/retally-tokens.mjs
 - Graphviz 渲染未验证（本机无 `dot`），dot 流程块只做了结构检查。
 - 行为实测为单轮、合成小仓库、单模型（`deepseek-flash`）、每场景一次；**不要据此推断长期或生产效果**。
 - 未发布、未提交上游、未改动版本发布流程（`.version-bump.json`、`.github/` 保持原样）。
-- 侦察阶段 DSH 自动创建过 `C:\Users\28198\.dsh\profiles\headless\`（仅 profile 骨架，未启用）；不需要时删除该目录即可。
-- 工作区里留着 git worktree `D:\Deepseek Project\superpowers-adaptive\base-v6.3.0`（v6.3.0 纯净基线，用于对比）。不再需要时：
-  ```powershell
-  cd "D:\Deepseek Project\superpowers-adaptive\repo"
-  git worktree remove "D:\Deepseek Project\superpowers-adaptive\base-v6.3.0"
-  ```
+- 安装演练只在沙箱里跑（`verification/sandbox-install/`），**没有**拿任何真实安装目录做过实验。
