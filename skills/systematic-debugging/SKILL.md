@@ -161,10 +161,11 @@ This is the path for an unknown cause. Each phase earns the next one: don't prop
 **Fix the root cause, not the symptom:**
 
 1. **Get a Failing Test Case**
-   - If a failing test already covers this, reuse it - don't rewrite it
+   - If a failing test already covers this **and you have a recorded failure for the current code state**, reuse it - don't rewrite it and don't re-run it for show
+   - If only a test file exists and you have not seen it fail, run it first and confirm it fails for the defect you are chasing before you touch the code
    - Otherwise: simplest possible reproduction, automated test if possible, one-off test script if no framework
    - For behavior defects this is what proves the fix; use the `superpowers:test-driven-development` skill for writing proper failing tests
-   - When the defect can't be automated (copy, styling, config, generated output), use the honest alternative and say what it does not cover
+   - When the defect genuinely has nothing to assert (copy, styling, generated output, or it truly cannot be automated here), use the honest alternative and say what it does not cover. The file type is not the reason - configuration and generated files can carry permission, routing, money, and contract behavior, and that behavior is testable
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -182,26 +183,20 @@ This is the path for an unknown cause. Each phase earns the next one: don't prop
    - STOP - do not stack another patch on top
    - Count: how many fixes have you tried?
    - First fix failed: return to Phase 1 and re-analyze with the new information
-   - **Two or more fixes failed: this is an escalation trigger.** Stop patching, re-investigate the problem from the evidence, and re-classify the task - the cause is not what you assumed, and the scope may be larger than you thought. That is not by itself evidence of an architecture problem, and it does not authorize a refactor
-   - **Three or more fixes failed:** the accumulating evidence now points at the design. STOP and question the architecture with your human partner before attempting another fix
+   - **Two or more fixes failed: this is an escalation trigger.** Stop patching, re-investigate from the evidence, and re-classify the task - the cause is not what you assumed, and the scope may be larger than you thought. A failure count is a trigger to investigate; on its own it is not evidence about the design, it does not authorize a refactor, and it does not require your human partner's approval for the next evidence-based step
+   - Keep going with the investigation rather than asking permission to continue: an unreproduced cause is an investigation problem, not an authorization problem
 
-5. **If 3+ Fixes Failed: Question Architecture**
+5. **When the Evidence Points at the Design**
 
-   The evidence has accumulated, so this is no longer a guess.
+   A failure count alone proves nothing about the architecture - the real cause can still be a wrong assumption, the environment, or a test that never reproduced the defect. Reaching this step takes **specific evidence**, not a number:
 
-   **Pattern indicating architectural problem:**
-   - Each fix reveals new shared state/coupling/problem in different place
+   - Each fix reveals new shared state, coupling, or the same problem in a different place
    - Fixes require "massive refactoring" to implement
-   - Each fix creates new symptoms elsewhere
+   - Each fix creates new symptoms elsewhere, or two parts of the system disagree about who owns a piece of state
 
-   **STOP and question fundamentals:**
-   - Is this pattern fundamentally sound?
-   - Are we "sticking with it through sheer inertia"?
-   - Should we refactor architecture vs. continue fixing symptoms?
+   **With that evidence in hand:** stop and put the pattern itself in question with your human partner - is this design fundamentally sound, are we sticking with it through inertia, should we fix the structure instead of the symptoms? Bring the evidence, not the failure count.
 
-   **Discuss with your human partner before attempting more fixes**
-
-   At this point it is no longer a failed hypothesis - the evidence points at a wrong architecture.
+   **Without it:** you are still in Phase 1. Gather more evidence.
 
 ## Red Flags - STOP and Follow Process
 
@@ -220,8 +215,8 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 2+ fixes failed:** stop and re-investigate; re-estimate the level before you touch the code again.
-**If 3+ fixes failed:** question the architecture (see Phase 4.5)
+**If 2+ fixes failed:** stop and re-investigate from the evidence; re-estimate the level before you touch the code again. Count is a trigger, not a verdict.
+**Only with concrete coupling/interface/state evidence:** put the design itself in question (see Phase 4.5).
 
 ## your human partner's Signals You're Doing It Wrong
 
@@ -245,7 +240,7 @@ If you catch yourself thinking:
 | "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
 | "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
 | "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
-| "One more fix attempt" (after 2+ failures) | 2+ failures is the trigger to stop and re-investigate; 3+ means question the architecture instead of fixing again. |
+| "One more fix attempt" (after 2+ failures) | 2+ failures is the trigger to stop and re-investigate. Nothing about the count says the architecture is wrong - only concrete coupling, interface, or state evidence does. |
 
 ## Quick Reference
 

@@ -1,6 +1,6 @@
 {
   "name": "superpowers",
-  "version": "6.3.0-adaptive.1",
+  "version": "6.3.0-adaptive.2",
   "description": "Superpowers skills and runtime bootstrap for coding agents (adaptive-flow fork: A/B/C/D process levels)",
   "type": "module",
   "main": ".opencode/plugins/superpowers.js",

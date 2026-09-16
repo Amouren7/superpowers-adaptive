@@ -16,8 +16,8 @@ markdown checklist saved with `write_to_file` (`IsArtifact: true`,
 `ArtifactMetadata.ArtifactType: "task"`), edited with `replace_file_content` /
 `multi_replace_file_content` as you go.
 
-At the start of any multi-step task, create the task artifact listing every step of
-your plan. As you complete each step, edit the artifact to mark it done (`- [x]`).
+At the start of multi-step work at levels C and D, create the task artifact listing every step of
+your plan. Level A and B work does not need one — answer, or make the contained fix. As you complete each step, edit the artifact to mark it done (`- [x]`).
 If the plan changes, update the checklist. Keep it current — it is your source of
 truth for what remains; once the conversation gets long, re-read it before starting
 each step.

@@ -79,7 +79,7 @@ A real integration loads the `using-superpowers` bootstrap at session start. The
 
 > Let's make a react todo list
 
-That is a level C request (a new feature with design choices), so a working integration loads the `brainstorming` skill before any code is written. Paste the complete transcript in the PR. To show the other half of the flow, add one level A or B message (for example "what does this function do?" or "fix this typo") and confirm the agent answers or fixes it directly instead of opening a design interview.
+That is a level C request (a new feature with design choices), so a working integration classifies it as C and says its short approach - approach, files touched, how it will be verified - before writing code, rather than opening a full design interview or stopping to ask for a second go-ahead. Paste the complete transcript in the PR. To show the other half of the flow, add one level A or B message (for example "what does this function do?" or "fix this typo") and confirm the agent answers or fixes it directly instead of opening a design interview.
 
 **These are not real integrations and will be closed:**
 

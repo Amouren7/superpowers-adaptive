@@ -197,9 +197,7 @@ Use the least powerful model that can handle each role to conserve cost and incr
 
 **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
 
-**Architecture and design tasks**: use the most capable available model.
-The final whole-branch review is one of these — dispatch it on the most
-capable available model, not the session default.
+**Architecture and design tasks**: use the most capable available model — when the harness offers a model choice at all. The final whole-branch review is one of these; scale its model to the branch's risk rather than to the ritual, and on a small branch the session default is a fine choice.
 
 **Review tasks**: choose the model with the same judgment, scaled to the
 diff's size, complexity, and risk. A small mechanical diff does not need the
@@ -496,9 +494,12 @@ made in secret.
 When the final whole-branch review is clean and its fixes are merged,
 delete this plan's workspace (`rm -rf <workspace>`) — the git history is
 the record now. Sibling directories belong to other plans; leave them
-alone.
+alone. If the work never got its own workspace, there is nothing to
+delete.
 
-Use superpowers:finishing-a-development-branch.
+Because this flow worked on a branch, finish it: use
+superpowers:finishing-a-development-branch. When the work stayed on the
+current branch with no merge to make, report the result instead.
 
 ## Common Rationalizations
 

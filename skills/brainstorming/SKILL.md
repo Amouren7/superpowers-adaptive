@@ -9,17 +9,17 @@ Help turn ideas into fully formed designs and specs through natural collaborativ
 
 ## Flow fit
 
-- **Levels:** C (short alignment) and D (full design exploration and sign-off); Spike answers the feasibility question that precedes either; B goes straight to the evidenced fix. **Lightweight path:** for C, name the approach, the files it touches, and how you'll verify it, then proceed.
+- **Levels:** C (short alignment) and D (full design exploration and sign-off); Spike answers the feasibility question that precedes either; B goes straight to the evidenced fix. **Lightweight path:** for C, name the approach, the files it touches, and how you'll verify it, then proceed — waiting only when a business-behavior, scope, risk, or authorization question is genuinely open.
 - **Skip when:** A design, spec, or plan for this work already exists, or your human partner already asked for this specific fix — work the delta instead of re-running the exploration.
-- **Non-negotiables:** Never implement against an unagreed design; never treat an assumption you have not raised as one.
+- **Non-negotiables:** Never implement a design decision your human partner has not heard; never treat an assumption you have not raised as one.
 
 <HARD-GATE>
 Do NOT write code, scaffold a project, or take any implementation
-action on a design decision your human partner has not agreed to. A
-requested fix whose cause is already evidenced and contained is
-already authorized — that is not an unapproved design decision; do
-not stop for a second approval, and do not re-ask what the request
-already answers.
+action on a design decision your human partner has not heard. Say the
+approach, then work. A requested fix whose cause is already evidenced
+and contained is already authorized — that is not an unapproved design
+decision; do not stop for a second approval, and do not re-ask what the
+request already answers.
 </HARD-GATE>
 
 ## Three Paths
@@ -28,30 +28,35 @@ Before your first question, classify the request and say the classification in o
 
 - **Spike** — a feasibility question ("can we...", "is it possible...",
   "quick and dirty is fine") whose output is an answer, not code you
-  keep. Present the question and what you'll try in 2-3 sentences, get
-  a nod, then find out as cheaply as correctness allows. No design
-  doc, no spec file. Report findings as a recommendation; anything you
-  built stays labeled throwaway.
+  keep. Present the question and what you'll try in 2-3 sentences, then
+  find out as cheaply as correctness allows. A read-only probe inside an
+  investigation you were already asked to do needs no further nod; get
+  agreement before the probe writes, spends, or destroys anything. No
+  design doc, no spec file. Report findings as a recommendation; anything
+  you built stays labeled throwaway.
 - **Bounded** — a well-scoped change to code that already exists in
   this repo: a new flag, a small endpoint, a one-file fix.
   Understanding the kind of app is not enough — bounded means the flow
   you are changing is already here to read. If there is no existing
   flow to change, the task is not bounded. Ask the clarifying
   questions that matter, present a short design IN CHAT (a few
-  sentences to a few short paragraphs), and STOP. Implementation
-  starts once your human partner agrees to that design — and for a fix
-  they already asked for, that agreement is the request itself. No
-  spec file, no implementation plan document.
+  sentences to a few short paragraphs), and proceed. You stop for
+  agreement only when a business-behavior, scope, risk, or
+  authorization question is genuinely open — a clear request you were
+  already given is its own agreement, so saying the approach is enough.
+  No spec file, no implementation plan document.
 - **Architectural** — new projects, new subsystems, changes that
   restructure how components fit together or alter interfaces others
   depend on. Follow the full process: questions, approaches, sectioned
   design, written spec, then the writing-plans skill.
 
-When in doubt between two paths, take the heavier one. Hidden complexity
-discovered mid-task upgrades the path — stop, say so, and step up. If
-investigation shows the task is smaller than assumed, you may step down,
-with one line saying why: you are dropping process you have not executed,
-never verification or a risk control.
+Classify from evidence, not from caution: if you cannot tell which path
+this is, take the bounded read-only look first and let what you find
+decide. Hidden complexity discovered mid-task upgrades the path —
+stop, say so, and step up. If investigation shows the task is smaller
+than assumed, you may step down, with one line saying why: you are
+dropping process you have not executed, never verification or a risk
+control.
 
 **Existing design, existing agreement.** If a spec, plan, or agreed
 design already covers this work, do not re-run the exploration. Read
@@ -88,7 +93,7 @@ your path and complete them in order.
 **Spike:**
 1. **Explore project context** — enough to frame the probe
 2. **Present question + probe plan** — 2-3 sentences
-3. **Get a nod** — enough to start probing
+3. **Probe** — start now when the probe is read-only; get a nod first if it writes, spends, or destroys
 4. **Investigate** — as cheaply as correctness allows
 5. **Report findings** — a recommendation; label anything built as throwaway
 
@@ -96,7 +101,7 @@ your path and complete them in order.
 1. **Explore project context** — check files, docs, recent commits
 2. **Ask clarifying questions** — one at a time, only the ones the request and the code do not already answer
 3. **Present short design in chat** — approach, files touched, testing
-4. **Align and proceed** — an explicit yes, or the fix request your human partner already made; never implement a design decision they have not heard
+4. **Proceed** — the design decision is said out loud before it is built; wait only if a business-behavior, scope, risk, or authorization question is still open
 5. **Implement** — proceed with the normal development workflow (TDD applies); no plan document
 
 **Architectural:**
@@ -108,7 +113,7 @@ your path and complete them in order.
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+9. **Transition to implementation** — architectural path only: invoke writing-plans skill to create implementation plan. Bounded work skips straight to implementation.
 
 ## Process Flow
 
@@ -118,7 +123,8 @@ digraph brainstorming {
     "Present question + probe (2-3 sentences)" [shape=box];
     "Ask clarifying questions (bounded)" [shape=box];
     "Present short design in chat" [shape=box];
-    "Human approves?" [shape=diamond];
+    "Material question open?\nbehavior, scope, risk, authorization" [shape=diamond];
+    "Ask it, then proceed" [shape=box];
     "Investigate; report recommendation" [shape=doublecircle];
     "Implement via normal workflow (no plan doc)" [shape=doublecircle];
     "Explore project context" [shape=box];
@@ -135,11 +141,13 @@ digraph brainstorming {
     "Classify: spike / bounded / architectural" -> "Present question + probe (2-3 sentences)" [label="spike"];
     "Classify: spike / bounded / architectural" -> "Ask clarifying questions (bounded)" [label="bounded"];
     "Classify: spike / bounded / architectural" -> "Explore project context" [label="architectural"];
-    "Present question + probe (2-3 sentences)" -> "Human approves?";
+    "Present question + probe (2-3 sentences)" -> "Investigate; report recommendation" [label="read-only probe"];
+    "Present question + probe (2-3 sentences)" -> "Material question open?\nbehavior, scope, risk, authorization" [label="probe writes/spends/destroys"];
     "Ask clarifying questions (bounded)" -> "Present short design in chat";
-    "Present short design in chat" -> "Human approves?";
-    "Human approves?" -> "Investigate; report recommendation" [label="spike: yes"];
-    "Human approves?" -> "Implement via normal workflow (no plan doc)" [label="bounded: yes or already requested"];
+    "Present short design in chat" -> "Material question open?\nbehavior, scope, risk, authorization";
+    "Material question open?\nbehavior, scope, risk, authorization" -> "Ask it, then proceed" [label="yes"];
+    "Material question open?\nbehavior, scope, risk, authorization" -> "Implement via normal workflow (no plan doc)" [label="no"];
+    "Ask it, then proceed" -> "Implement via normal workflow (no plan doc)";
     "Hidden complexity? Upgrade path" -> "Classify: spike / bounded / architectural";
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
@@ -156,8 +164,8 @@ digraph brainstorming {
 
 **Terminal states are path-bound.** Architectural: the ONLY skill you
 invoke after brainstorming is writing-plans — never frontend-design,
-mcp-builder, or any other implementation skill. Bounded: after
-alignment, implementation proceeds directly through the normal
+mcp-builder, or any other implementation skill. Bounded: after the short
+in-chat design, implementation proceeds directly through the normal
 development workflow; no plan document. Spike: the terminal state is a
 reported recommendation.
 

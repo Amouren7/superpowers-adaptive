@@ -18,14 +18,14 @@ Load plan, review critically, execute all tasks, report when complete.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-**Note:** Tell your human partner that Superpowers works much better with access to subagents (Claude Code, Codex CLI, Codex App, Copilot CLI, and Gemini CLI all qualify; see the per-platform tool refs in `../using-superpowers/references/`). If subagents are available, use superpowers:subagent-driven-development instead of this skill.
+**Note:** Superpowers works better with access to subagents (Claude Code, Codex CLI, Codex App, Copilot CLI, and Gemini CLI all qualify; see the per-platform tool refs in `../using-superpowers/references/`). Use superpowers:subagent-driven-development when the plan's remaining tasks are genuinely independent of each other and the trade-off clearly pays for the extra coordination; when they are few or tightly coupled, working through them in this session is the cheaper, more reliable path. The tools existing is not by itself a reason to dispatch.
 
 An existing plan is inherited context: don't re-interview, re-classify, or re-litigate what the plan or the design already settled, and treat new requirements or review feedback as a delta. Work only what remains, and say so when a step is genuinely wrong or the scope moved. A plan file is not a precondition — lighter work uses the steps you agreed on.
 
 ## The Process
 
 ### Step 1: Load and Review Plan
-1. Ensure an isolated workspace: use superpowers:using-git-worktrees to create one or verify the existing one
+1. Decide the workspace: work in place by default. Use superpowers:using-git-worktrees only when isolation is actually needed — a long or risky change you may need to abandon, work that must run beside other work, or your human partner asking for it
 2. Read plan file
 3. Review critically - identify any questions or concerns about the plan
 4. If concerns: Raise them with your human partner before starting
@@ -41,10 +41,7 @@ For each task:
 
 ### Step 3: Complete Development
 
-After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- Use superpowers:finishing-a-development-branch
-- Follow that skill to verify tests, present options, execute choice
+After all tasks complete and verified, **only when this session actually did branch-lifecycle work** — you created a branch or worktree, or your human partner asked for a merge, commit, or PR — announce "I'm using the finishing-a-development-branch skill to complete this work." and use superpowers:finishing-a-development-branch. When the work stayed in place on the current branch with no such request, report the result and stop: don't open a branch-finishing flow nobody asked for.
 
 ## When to Stop and Ask for Help
 

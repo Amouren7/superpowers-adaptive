@@ -12,6 +12,17 @@ description: Use when about to claim work is complete, fixed, or passing, or bef
 - **Skip when:** you are not asserting anything about the state of the work, or you are explicitly reporting that something is unverified.
 - **Non-negotiables:** never state a claim broader than the evidence covers (local ≠ production, partial ≠ full); say plainly what you did not or could not verify.
 
+### The evidence floor by level
+
+| Level | Evidence before you report |
+|---|---|
+| **A** | the answer is right; nothing to run. Answering or reporting a read-only finding is not a completion claim |
+| **B** | a targeted check of the changed behavior - the test around it, or the exact command - cited as it was run |
+| **C** | the behavior test for the change, plus the tests around it |
+| **D** | the full suite for the area, the diff reviewed, and the risk controls the design named |
+
+Configuration and generated files follow the behavior they carry, not their extension: a permission matrix, route table, money threshold, or interface contract gets a behavioral check wherever it is written.
+
 ## Overview
 
 **Core principle:** evidence before claims - and evidence that covers exactly the claim.
@@ -21,6 +32,8 @@ description: Use when about to claim work is complete, fixed, or passing, or bef
 ```
 NO COMPLETION CLAIM WITHOUT EVIDENCE COVERING THAT CLAIM
 ```
+
+It scopes to claims about the state of the work. Explaining code, answering a question, or reporting what a read-only investigation found is the work itself, not a completion claim - the floor above is what a claim has to clear, and at level A there is nothing to run.
 
 ## Evidence Scope and Validity
 
@@ -124,4 +137,4 @@ Not every unverified item can be closed before you report, and leaving it silent
 
 ## When To Apply
 
-Before any variation of success/completion claims, any expression of satisfaction about the work's state, committing, PR creation, task completion, moving to the next task, or delegating to agents. The rule applies to exact phrases, paraphrases and synonyms, implications of success, and any other wording that suggests completion.
+Before any claim about the state of the work - success, completion, "fixed", "passing", "done" - including paraphrases, implications, and expressions of satisfaction, and before committing, opening a PR, moving to the next task, or delegating. It does not turn every message into a verification ritual: answering a question or reporting a read-only finding is not a completion claim, and re-running a check whose inputs have not changed is not required.

@@ -145,7 +145,9 @@ A port is finished when **all** of these are true:
 
    > Let's make a react todo list
 
-   auto-triggers the `brainstorming` skill *before any code is written*. Capture
+   auto-triggers level C classification: the model states a short approach
+   (approach, files touched, verification) before writing code, without a full
+   design interview and without waiting for a second go-ahead. Capture
    the full transcript — the PR requires it.
 5. Tests cover the integration (Part 5) and pass.
 6. A real user can install it through the harness's own mechanism (not by
@@ -509,12 +511,12 @@ harness is listed.)
 
 ### Step 5 — Handle a harness with no native skill tool
 
-`using-superpowers/SKILL.md` tells the model to *never read skill files manually
-with file tools — always use your platform's skill-loading mechanism.* The point
-is "don't bypass the mechanism," not "never use file-read." What counts as "your
-platform's mechanism" depends on the harness — and for a harness with no skill
-tool, the documented mechanism *is* reading `SKILL.md`. So reading it there
-honors the rule rather than breaking it. Distinguish three cases:
+`using-superpowers/SKILL.md` says skills are *"tools you load when they help, not
+a gate you pass before replying"* — the load has to go through whatever mechanism
+your platform offers. What counts as that mechanism depends on the harness — and
+for a harness with no skill tool, the documented mechanism *is* reading
+`SKILL.md`. So reading it there honors the rule rather than breaking it.
+Distinguish three cases:
 
 1. **Native `Skill`-style tool** (Claude Code, Copilot CLI, Gemini's
    `activate_skill`): point the mapping at that tool.
@@ -819,10 +821,9 @@ Use this as the live index; when in doubt, read the files, not this table.
   reads `SKILL.md` on demand. Don't assume a `skillPaths` equivalent exists.
 - **Mapping in two places.** For in-process plugins the mapping may live both
   inline and in a `references/` file (pi). Update both.
-- **The "never read skill files" line.** It means "don't bypass your platform's
-  skill-loading mechanism," not "never use file-read." On a no-skill-tool harness
-  that mechanism *is* reading `SKILL.md` — say so explicitly in the mapping
-  (Part 5).
+- **The skill-loading line.** It means "load through your platform's mechanism,"
+  not "never use file-read." On a no-skill-tool harness that mechanism *is*
+  reading `SKILL.md` — say so explicitly in the mapping (Part 5).
 - **`.sh` on Windows.** Keep hook scripts extensionless (Part 7).
 - **Unregistered version.** A new manifest not added to `.version-bump.json`
   ships stale (Part 6).
