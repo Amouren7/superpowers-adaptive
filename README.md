@@ -64,6 +64,7 @@ Verified, with the caveats stated as plainly as the results:
 | Upstream repo test suites | **11/13 PASS** (hooks 6/6, pi 6/6, hermes 19, opencode caching, worktree path policy, shell lint, codex/kimi/devin/antigravity manifests, find-polluter). The 2 codex suites **fail identically on a pristine v6.3.0 checkout** — environment issue, not introduced here |
 | Install / restore sandbox drill | **14/14 PASS** — target-absent install, backup→verify→stage→replace, restore byte-identical, and a project directory that already had a user's own custom skill (survives; restore is manifest-driven, never "delete the whole directory"). Includes a regression guard asserting that the old wrong source path **is rejected** |
 | Behaviour scenarios | 9 scenarios × 3 arms, run through isolated `dsh --profile headless` sessions with the real session-start hook. Details and failures: [`docs/adaptive/verification-report.md`](docs/adaptive/verification-report.md) |
+| DSH integration (`.dsh-plugin/`) | **Verified end to end**: a fresh `dsh --profile headless` session quoted a sentence from the entry verbatim, so the entry is present from turn 1. The hook route was tried first and rejected on evidence — DSH's Claude Code hook bridge ran the command but the context never reached the model (`SessionStart` is detached by design, and `UserPromptSubmit` failed the same probe). §6.8 of the report |
 | Evidence | `docs/adaptive/evidence/` (raw check outputs, drill report, per-file hashes); the full run archive is a local artifact, not published |
 
 **Not verified — read this before trusting it:** Graphviz rendering (no `dot` on the authoring machine), harness installer scripts, and the two codex test suites that also fail on a pristine checkout. Behaviour was exercised on synthetic repositories, mostly once per scenario — one observed stall did not reproduce on a second run, which is exactly why single runs are not treated as conclusions here.
@@ -87,6 +88,8 @@ The fork's work lives on the **`adaptive-flow`** branch (branched from upstream 
 
 **Other harnesses** (Codex, Cursor, Gemini, Copilot, Kimi, OpenCode, Pi, Hermes, Antigravity, Devin, Factory Droid, Grok): the same integration points as upstream, described in [`README.upstream.md`](README.upstream.md) — substitute this repository's URL for `obra/superpowers`.
 
+**DeepSeek Harness:** [`.dsh-plugin/`](.dsh-plugin/README.md) injects the entry into every DSH session as a durable prompt context, so sessions start already knowing about the A/B/C/D levels. Install it into a profile's `bundles` (the plugin folder has the exact steps, including the `dsh.bundle.patch` requirement that makes a profile fail to boot if omitted).
+
 **Running a release archive:** a package is this repository tree inside a top-level `superpowers-6.3.0-adaptive.2/` folder. The install drill exists because that extra directory level is easy to get wrong: `node verification/install-drill.mjs <archive.zip>`.
 
 ## Repository layout
@@ -94,6 +97,7 @@ The fork's work lives on the **`adaptive-flow`** branch (branched from upstream 
 ```
 skills/                 14 skills (upstream's, with the adaptive entry + `## Flow fit` blocks)
 hooks/                  session-start bootstrap (injects the entry; unchanged mechanics)
+.dsh-plugin/            DeepSeek Harness integration — injects the entry as a prompt context
 .opencode/ .pi/ .hermes-plugin/ .claude-plugin/ .codex-plugin/ …   harness integrations
 docs/adaptive/          provenance, change note, verification report, install/restore
 docs/adaptive/evidence/ raw check outputs behind the table above
@@ -190,6 +194,7 @@ Superpowers 的技能质量很高，问题出在入口规则：改一个错别�
 | 上游自带测试套件 | **11/13 通过**（hooks 6/6、pi 6/6、hermes 19、opencode 缓存、worktree 路径策略、shell lint、codex/kimi/devin/antigravity 清单、find-polluter）。2 条 codex 套件在**纯净 v6.3.0 检出上同样失败**——环境问题，非本次引入 |
 | 安装/恢复沙箱演练 | **14/14 通过**——目标不存在时安装、备份→校验→暂存→替换、按备份恢复后逐字节一致、项目目录里**已有用户自定义技能**时只按清单回滚（不会"删掉整个目录"）；另有一条反向断言：旧的错误源路径**会被预检查拦下** |
 | 行为场景实测 | 9 个场景 × 3 个臂，在隔离的 `dsh --profile headless` 会话里跑，真实执行 session-start 钩子注入。细节与失败项见 [`docs/adaptive/verification-report.md`](docs/adaptive/verification-report.md) |
+| DSH 集成（`.dsh-plugin/`） | **端到端已验证**：全新的 `dsh --profile headless` 会话能逐字引用入口里的句子，说明第一轮就在上下文中。先试过 hook 路线并按证据放弃——DSH 的 Claude Code hook 桥接会执行命令，但上下文送不到模型（`SessionStart` 按设计是脱离运行的，`UserPromptSubmit` 同样没通过探针）。见报告 §6.8 |
 | 证据 | `docs/adaptive/evidence/`（各检查原始输出、演练报告、逐文件哈希）；完整运行归档是本地产物，未随仓库发布 |
 
 **未验证的部分（信它之前请先看这段）**：Graphviz 渲染（作者机器无 `dot`）、各 harness 的安装脚本、以及在纯净检出上同样失败的那两条 codex 套件。行为实测在合成仓库上进行，多数场景只跑一次——观察到的一次停顿在第二次运行中没有复现，这正是本仓库不把单次结果当结论的原因。
@@ -213,6 +218,8 @@ claude --plugin-dir "/path/to/superpowers-adaptive"
 
 **其他 harness**（Codex、Cursor、Gemini、Copilot、Kimi、OpenCode、Pi、Hermes、Antigravity、Devin、Factory Droid、Grok）：集成点与上游一致，见 [`README.upstream.md`](README.upstream.md)，把其中的 `obra/superpowers` 换成本仓库地址即可。
 
+**DeepSeek Harness**：[`.dsh-plugin/`](.dsh-plugin/README.md) 把入口作为持久 prompt context 注入每个 DSH 会话，会话一开始就知道 A/B/C/D 分级。按插件目录里的步骤把它加进某个 profile 的 `bundles` 即可（那里也写明了漏掉 `dsh.bundle.patch` 会让 profile 起不来的坑）。
+
 **关于发布包**：打包后的归档 = 本仓库内容套一层 `superpowers-6.3.0-adaptive.2/` 顶层目录。正因为多这一层很容易搞错，才有了安装演练：`node verification/install-drill.mjs <archive.zip>`。
 
 ## 仓库结构
@@ -220,6 +227,7 @@ claude --plugin-dir "/path/to/superpowers-adaptive"
 ```
 skills/                 14 个技能（上游技能 + 自适应入口与 `## Flow fit`）
 hooks/                  session-start 启动注入（机制未改）
+.dsh-plugin/            DeepSeek Harness 集成——把入口作为 prompt context 注入
 .opencode/ .pi/ .hermes-plugin/ .claude-plugin/ .codex-plugin/ ……  各 harness 集成
 docs/adaptive/          来历、变更说明、验证报告、安装与恢复
 docs/adaptive/evidence/ 上表各项检查的原始输出

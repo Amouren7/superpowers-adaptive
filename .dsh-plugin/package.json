@@ -1,0 +1,25 @@
+{
+  "name": "@dsh-external/dsh-superpowers-adaptive",
+  "version": "0.0.2",
+  "description": "Inject the Superpowers Adaptive entry (A/B/C/D process levels) into every DSH session as a durable prompt context - the DSH-native equivalent of the Claude Code SessionStart injection.",
+  "private": true,
+  "type": "module",
+  "main": "./lib/index.js",
+  "types": "./lib/types/index.d.ts",
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "cordis": ">=4.0.0-rc <5"
+  },
+  "scripts": {
+    "build": "bash scripts/build.sh"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

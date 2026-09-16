@@ -211,6 +211,35 @@ a2 数值更小，但**主要因为 T03 少做了一件事**（没有实施计�
 
 仍未覆盖：交互式（非 `-p`）会话、多轮会话、其它模型。
 
+### 6.8 DSH 集成（`.dsh-plugin/`）：为什么不是 hook，以及验证结果
+
+**目标**：让 DSH 会话也像 Claude Code 那样，一开会话就带上自适应入口。
+
+**先试的是 hook**（DSH 自带 `@deepseek-ai/dsh-hooks-claude-code`，能把 Claude Code 格式的 hook 配置接到 DSH 拦截缝上，含 `SessionStart`）。实测结论：**桥接会执行 hook，但上下文送不到模型。**
+
+| 探针 | 结果 |
+|---|---|
+| `SessionStart` 命令里写留痕文件 | **文件生成** → 桥接确实执行了 hook |
+| 同一 hook 输出 `additionalContext`，事后问模型能否引用 `No ceremony` 段落 | 模型答 `NONE`（未注入） |
+| 换 `UserPromptSubmit`（模型调用前触发，理论上同轮可见）重试，同样留痕 + 同样提问 | 留痕有、模型仍答 `NONE` |
+| 桥接文档明示 | `SessionStart` 是**脱离运行**的，"上下文可能错过第一个请求" |
+
+**改用 DSH 原生机制**：`.dsh-plugin/` 是一个极小插件（纯 ESM、零运行时依赖），向 `system-prompt` 服务注册一个**持久 prompt context**——DSH 会把它物化为 user 角色的历史快照，**从第一轮就在**，无 shell、无子进程、无竞态。入口正文不在插件里重复：装配时从已安装的 Superpowers 目录读取 `skills/using-superpowers/SKILL.md`（可用 `SUPERPOWERS_PLUGIN_ROOT` 覆盖），因此两边不会漂移；文件缺失时只告警、不注入，会话照常启动。
+
+**验证结果**：
+
+| 检查 | 结果 |
+|---|---|
+| 热注入后当前 web 会话 | 该会话上下文里**直接出现** `<SUPERPOWERS>` + 完整入口（本机实时可见） |
+| 新的 headless 会话（`dsh --profile headless`，exit=0） | 让它逐字引用入口里 "No ceremony" 段落 → **原句正确引用**，证明第一轮就在上下文中 |
+| web / headless 两个 profile | 均已写入 `dependencies` + `bundles`，重启后由 bundles 正常装配 |
+
+**过程中踩到并记录的一个坑**：把包加进 profile 的 `bundles` 时，包**必须**声明 `dsh.bundle.patch`（自己的 `cordis.patch.yml`），否则 profile 直接启动失败：
+`profile bundle "@dsh-external/dsh-superpowers-adaptive" declares no dsh.bundle in its package.json`。
+本插件的 `package.json` 与 `cordis.patch.yml` 已按该契约写好（`dev_install_package` 当时只加了 bundles，所以先崩了一次，已修并复验 headless exit=0）。
+
+**仍未验证**：DSH 之外没有别的 harness 用这套机制；`SUPERPOWERS_PLUGIN_ROOT` 指向缺失目录时的降级路径只做了代码审查，没有实跑。
+
 ---
 
 ## 7. 统计口径修正（审查第 7 条）

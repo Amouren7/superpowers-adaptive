@@ -1,0 +1,6 @@
+# dsh-superpowers-adaptive bundle 层：插入插件入口。
+# 插件只依赖 system-prompt 服务（dsh-base 已含），无客户端部分。
+- insert:
+    - id: dsh-superpowers-adaptive
+      name: '@dsh-external/dsh-superpowers-adaptive'
+      config: {}
