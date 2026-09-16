@@ -68,4 +68,4 @@ After all tasks complete and verified, **only when this session actually did bra
 - Don't skip verifications
 - Reference skills when plan says to
 - Stop when blocked, don't guess
-- Never start implementation on main/master branch without explicit user consent
+- Never start implementation on main/master **that your human partner did not ask for**. Being asked to carry out the plan, in a repo with no branch convention, is the consent — say which branch you are on, do the work in place, and don't turn it into a menu of workspace options. When the project does have a branch convention (documented, or visible in its history), follow it.

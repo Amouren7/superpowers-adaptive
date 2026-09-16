@@ -216,7 +216,7 @@ If you catch yourself thinking:
 **ALL of these mean: STOP. Return to Phase 1.**
 
 **If 2+ fixes failed:** stop and re-investigate from the evidence; re-estimate the level before you touch the code again. Count is a trigger, not a verdict.
-**Only with concrete coupling/interface/state evidence:** put the design itself in question (see Phase 4.5).
+**Only with concrete coupling/interface/state evidence:** put the design itself in question (Phase 4, step 5).
 
 ## your human partner's Signals You're Doing It Wrong
 
