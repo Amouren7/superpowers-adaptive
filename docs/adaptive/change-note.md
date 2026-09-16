@@ -21,6 +21,12 @@
 | 6 | 按文件类型（配置/生成文件）豁免行为验证 | TDD description/Flow fit/When to Use/Iron Law 提醒/替代验证表/合理化表/最终规则，以及 systematic-debugging Phase 4.1，全部把豁免理由从「文件类型」改为「没有可断言的行为变化，或当前确实无法自动化并说明原因」；明确配置与生成文件照样承载权限、路由、金额、契约行为 |
 | 7 | 「总 token」实为「未缓存输入 + 输出」，漏掉缓存读取 | `check-scenarios.mjs` 与 `make-compare.mjs` 改为分开报告未缓存输入/缓存读取/缓存写入/输出，不再出现「总 token」；新增 `verification/retally-tokens.mjs` 从原始 metrics 复算。adaptive.1 报告原文保留在 `adaptive.1/`，未回写 |
 
+**同一轮里另修的一个真实缺陷（在真机上安装时才暴露）**：
+
+| 位置 | 问题 | 处置 |
+|---|---|---|
+| `hooks/run-hook.cmd` | Windows 下只在 `C:\Program Files\Git\...` 找 Git Bash；Git 装在别处时回退到 `where bash`，命中 WSL 的 `bash.exe`（它跑不了 Windows 路径），于是 SessionStart **静默失败**（exit 0、无输出、不报错）。这不是本 fork 引入的：v6.2.0 的 wrapper 与本包逐字节相同，Claude Code 的实际调用路径（`shell: bash` 把该文件当脚本跑）也不受影响，所以一直没被发现 | 改为按 `CLAUDE_CODE_GIT_BASH_PATH` → `SUPERPOWERS_BASH` → 标准 Git for Windows 位置 → 由 `where git` 推导 → PATH（跳过 System32 与 WindowsApps 两个 WSL 启动器）依次查找；找不到时在 stderr 写明原因。实测：cmd 分支与 Unix 分支都能注入，hooks 与 shell-lint 测试通过 |
+
 ## 二、交叉引用审计（防止从别的入口绕回强制流程）
 
 审查报告第 3 条要求「同步检查交叉引用，防止从其他入口绕回强制流程」。本轮做了一次全量审计（skills/** + hooks/** + docs/** + CLAUDE.md），修掉会被绕回的入口：

@@ -66,7 +66,9 @@ Verified, with the caveats stated as plainly as the results:
 | Behaviour scenarios | 9 scenarios × 3 arms, run through isolated `dsh --profile headless` sessions with the real session-start hook. Details and failures: [`docs/adaptive/verification-report.md`](docs/adaptive/verification-report.md) |
 | Evidence | `docs/adaptive/evidence/` (raw check outputs, drill report, per-file hashes); the full run archive is a local artifact, not published |
 
-**Not verified — read this before trusting it:** no Claude Code end-to-end run (the CLI is not installed on the authoring machine), no Graphviz rendering (no `dot`), no harness installer scripts, and every behaviour scenario ran **once**, on one model, on synthetic repositories. One observed stall did not reproduce on a second run, which is exactly why single runs are not treated as conclusions here.
+**Not verified — read this before trusting it:** Graphviz rendering (no `dot` on the authoring machine), harness installer scripts, and the two codex test suites that also fail on a pristine checkout. Behaviour was exercised on synthetic repositories, mostly once per scenario — one observed stall did not reproduce on a second run, which is exactly why single runs are not treated as conclusions here.
+
+**Claude Code, end to end (added after the first release, CLI 2.1.272):** the session-start hook really does inject the entry (confirmed from a `--debug-file` hook log), and the three levels behaved as designed — a level C request ("Let's make a react todo list") was scaffolded in one turn with no design interview and no second go-ahead; a level A request answered directly with zero file changes; a level B fix landed on the default branch with no plan document and no branch ceremony. In the two non-interactive sessions Claude Code's permission layer blocked `node`/`npm`, and in both cases the agent said the work was **unverified** rather than claiming a pass — the fix was then confirmed by an independent run (`pass 2 / fail 0`). Details: [`docs/adaptive/evidence/claude-code-e2e.md`](docs/adaptive/evidence/claude-code-e2e.md). Still unverified: interactive and multi-turn sessions, other models, other harnesses.
 
 **Cost, stated honestly:** the session-start entry grew from 5,760 to 6,986 characters (+21%). It hit a hard limit on the way — Hermes spills injected context over 10,000 characters, and the first draft was 10,414 and failed its own test; it is 9,831 now. Skill bodies grew 2.2%.
 
@@ -190,7 +192,9 @@ Superpowers 的技能质量很高，问题出在入口规则：改一个错别�
 | 行为场景实测 | 9 个场景 × 3 个臂，在隔离的 `dsh --profile headless` 会话里跑，真实执行 session-start 钩子注入。细节与失败项见 [`docs/adaptive/verification-report.md`](docs/adaptive/verification-report.md) |
 | 证据 | `docs/adaptive/evidence/`（各检查原始输出、演练报告、逐文件哈希）；完整运行归档是本地产物，未随仓库发布 |
 
-**未验证的部分（信它之前请先看这段）**：没有在 Claude Code 上端到端实测（作者机器上没装该 CLI）；Graphviz 未渲染（本机无 `dot`）；各 harness 的安装脚本未实测；每个行为场景**只跑了一次**、单一模型、合成仓库。观察到的一次停顿在第二次运行中没有复现——这正是本仓库不把单次结果当结论的原因。
+**未验证的部分（信它之前请先看这段）**：Graphviz 渲染（作者机器无 `dot`）、各 harness 的安装脚本、以及在纯净检出上同样失败的那两条 codex 套件。行为实测在合成仓库上进行，多数场景只跑一次——观察到的一次停顿在第二次运行中没有复现，这正是本仓库不把单次结果当结论的原因。
+
+**Claude Code 端到端（首发后补测，CLI 2.1.272）**：session-start 钩子确实注入了入口（由 `--debug-file` 的钩子日志证实）；三级行为符合设计——C 级请求（"Let's make a react todo list"）一轮内搭好应用，没有设计访谈、没有等第二次点头；A 级请求直接作答、源码零改动；B 级修复落在默认分支，没有计划文档、没有分支仪式。两个非交互会话里 `node`/`npm` 被 Claude Code 权限层拦住，两次都明确写了"**未验证**"而没有谎称通过——修复随后由独立复跑确认（`pass 2 / fail 0`）。详见 [`docs/adaptive/evidence/claude-code-e2e.md`](docs/adaptive/evidence/claude-code-e2e.md)。仍未覆盖：交互式与多轮会话、其它模型、其它 harness。
 
 **代价如实说**：会话启动入口从 5,760 字符涨到 6,986 字符（+21%）。涨的过程中撞到过一条硬限制——Hermes 注入上下文超过 10,000 字符会被 spill 到文件，第一版 10,414 字符直接让自己的一条测试失败，压缩后 9,831。技能正文增长 2.2%。
 

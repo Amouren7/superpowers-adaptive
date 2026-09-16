@@ -194,6 +194,23 @@ a2 数值更小，但**主要因为 T03 少做了一件事**（没有实施计�
 - **重跑结果**：T05 a1 2/2、a2 2/2、a3 2/2；T08 a1 2/2、a2 2/2、a3 2/2；T07（v3 判据）a1 4/4、a2 4/4、a3 4/4。每次运行的留痕恰好 **2 条**（改前 FAIL → 改后 PASS），与"干净夹具"的预期一致。
 - **结论**：污染没有改变任何 must 判据的结论（重跑后与第一轮一致），也没有把失败的场景洗成通过；但它确实让"留痕顺序"这类证据在第一轮不可信，所以按不可信处理并重跑，而不是解释过去。T08 在 a2 上掉了一条 **soft** 判据（`evidence_based`：最终答复里没有出现"复现/原因/证据/验证"这类词），must 未受影响，如实记录。
 
+### 6.7 Claude Code 端到端补测（安装后补做）
+
+本机后来确认装有 Claude Code CLI（2.1.272），因此把原先"未在 Claude Code 实测"这条补上了。完整记录（含原文摘录）见 `evidence/claude-code-e2e.md`。
+
+**钩子注入已证实**：`claude -p ... --debug-file` 的日志记录
+`Hook SessionStart:startup (SessionStart) success:`，含 `hookSpecificOutput.additionalContext` —— 即 `settings.json` 调用的 `hooks/run-hook.cmd session-start` 真的把新入口注入了会话。
+
+| 等级 | 任务 | 结果 |
+|---|---|---|
+| C | `Let's make a react todo list` | 一轮内搭好 Vite + React 待办应用（9 个文件）；**没有**设计访谈、没有设计文档、**没有**等第二次点头；只把两处可能有分歧的取舍说明出来；同时如实声明因权限层拦住 `npm/node` 而"写好了但未验证" |
+| A | 解释 `applyDiscount`，不要改代码 | 逐行解释 + 字段对应表；`git status` 显示源码零改动；无流程、无文档、无提问 |
+| B | `node --test` 失败，修好它 | 定位到 `slugify` 只折叠空白、标点原样穿过；改为 `[^a-z0-9]+` 并修掉首尾横线；留在 `master`，无计划文档、无分支、无二次批准；额外指出非 ASCII 输入会被清空这一真实边界 |
+
+两个 `-p` 会话里 `node`/`npm` 被 Claude Code 权限层拦下（非交互会话无法应答授权弹窗），因此它们**没有真正跑测试**——两处都明确写了"未验证"，没有把没跑的东西说成通过。B 级修复由安装方在会话外独立复跑确认：`pass 2 / fail 0`，`slugify('Hello, World!') === 'hello-world'`。
+
+仍未覆盖：交互式（非 `-p`）会话、多轮会话、其它模型。
+
 ---
 
 ## 7. 统计口径修正（审查第 7 条）
@@ -227,7 +244,7 @@ a2 数值更小，但**主要因为 T03 少做了一件事**（没有实施计�
 
 ## 9. 未验证 / 无法执行的项
 
-- **未在 Claude Code 上实测**（本机未安装 Claude Code CLI）；未跑 Claude Code 专属的交互式套件（`tests/claude-code/test-subagent-driven-development*.sh`、`tests/explicit-skill-requests/*`）。行为验证全部在 DSH headless 隔离环境中完成。
+- **Claude Code 端到端：已在装完后补测**（本机 CLI 2.1.272，见 `evidence/claude-code-e2e.md`）——钩子注入有 debug 日志证实，C/A/B 三级行为符合设计。仍未覆盖：**交互式（非 `-p`）会话、多轮会话**、Claude Code 专属的交互式套件（`tests/claude-code/test-subagent-driven-development*.sh`、`tests/explicit-skill-requests/*`）。另外这两个 `-p` 会话里 `node`/`npm` 被 Claude Code 的权限层拦住，所以"自己跑测试"这一步在这些会话中**没有真正执行**（修复本身由安装方独立复跑验证：2/2 通过）。
 - **Graphviz 渲染未验证**（本机无 `dot`）：`skills/brainstorming` 改写过的 dot 流程图只做了结构检查（`dot-structure 1/1`）与人工复核，未实际渲染。
 - **未运行**：`tests/version-bump`（需要 `jq`，本机没有）、`tests/brainstorm-server`（需要 `npm i ws`）、`tests/writing-skills/test-render-graphs.sh`（需要 `dot`）。
 - 各 harness 的安装脚本未实测（`.codex-plugin` / `.kimi-plugin` / `.devin-plugin` / `.antigravity-plugin`）；只做了清单一致性与工具映射检查。
@@ -262,3 +279,19 @@ SP_EVAL_BASH=/path/to/bash node verification/run-scenario-v2.mjs a3 all
 未随仓库发布的本地证据归档保留了各臂运行现场：`prompt-full.txt` / `out.txt` / `err.txt` / `eval-test-runs.log`，**以及运行工作区 `work/`**（仅去掉 `.dsh/skills` 与 `.git`）。
 
 该归档的**自洽性已实测**：把它解包后，用说明里的原命令离线复跑判据，三份 verdict 的**判据结论与仓库内逐条一致**（`must_pass/must_total` 与每条判据的 PASS/FAIL 完全相同；只有 `cmd_pass` 证据文本里的测试耗时这类非确定字段不同）。第一次打包时**漏了 `work/`**，导致离线复跑把大量文件类判据误判为 FAIL —— 已修正并重新打包后才写进本报告。检查结论与原始输出见 `evidence/`。
+
+---
+
+## 11. 实际安装记录（本机，装完后补写）
+
+安装目标与结果：
+
+| 目标 | 做法 | 结果 |
+|---|---|---|
+| Claude Code 插件 `~/.claude/plugins/superpowers` | 备份 v6.2.0（zip + 校验可解开含清单）→ 暂存校验 → 替换 → 后检查 | 现为 `6.3.0-adaptive.2`；与已发布包（`git ls-files` 299 个文件）**逐字节一致**；`.git`/`.pytest_cache` 等元数据未留在插件目录 |
+| Claude Code 用户级技能 `~/.claude/skills` | 这 14 个技能**先整目录备份为 14 个 zip**，再整目录替换（避免新旧文件混在一起） | 14 个全部更新，逐字节校验无差异；其余 28 个技能未触碰 |
+| DSH 用户级技能 `~/.agents/skills` | 写清单（新增 14 / 覆盖 0），覆盖前先备份 | 14 个技能已进入 DSH 技能目录（会话技能目录里可见），原 43 个技能未触碰 |
+
+**安装过程中发现并修掉的一个真实缺陷**（见 `change-note.md`）：`hooks/run-hook.cmd` 只在 `C:\Program Files\Git\...` 找 Git Bash，本机 Git 装在别处时它会回退到 `where bash` → 命中 WSL 的 `bash.exe`，于是 SessionStart 静默失败（exit 0、无输出）。这不是本 fork 引入的（v6.2.0 的 wrapper 与本包逐字节相同），但只有在真实机器上安装才会暴露。现已改为按 `CLAUDE_CODE_GIT_BASH_PATH` → `SUPERPOWERS_BASH` → 标准位置 → `where git` 推导 → PATH（跳过 System32 与 WindowsApps 两个 WSL 启动器）的顺序查找，找不到时在 stderr 说明原因。修后在本机实测：**cmd 分支与 Unix 分支都能注入**，`tests/hooks/test-session-start.sh` 与 `tests/shell-lint` 均通过。
+
+回滚方式：插件用 `~/.dsh/backups/superpowers-plugin-6.2.0-*.zip`；Claude Code 技能用 `~/.dsh/backups/claude-skills-backup-*/<name>.zip`；DSH 技能按清单 `~/.dsh/backups/dsh-skills-install-*.json` 删除新增的 14 个目录即可（**不要**删除整个 `skills` 目录）。三份清单同时留了一份在维护者本地 `dist/`。
