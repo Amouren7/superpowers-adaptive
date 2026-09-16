@@ -19,7 +19,7 @@
 | `docs/adaptive/evidence/` | 各检查的原始输出、安装演练报告、逐文件哈希 |
 | `verification/` | 评测工具：场景、判据、运行器、校验器、安装演练 |
 
-本地提交：分支 `adaptive-flow`，commit **`77270e9`**（含 `803d75f`；adaptive.1 = `f01828a`，上游基线 `b36e082` = v6.3.0）。
+本地提交：分支 `adaptive-flow`，commit **`843fe51`**（含 `13940c3`；adaptive.1 = `801eb14`，上游基线 `b36e082` = v6.3.0）。
 
 ## 一、这个包是什么
 

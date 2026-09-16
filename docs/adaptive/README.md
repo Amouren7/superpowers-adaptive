@@ -20,6 +20,8 @@ Everything about *this fork* as opposed to upstream Superpowers. Start with the 
 
 | Commit | What |
 |---|---|
-| `f01828a` | `6.3.0-adaptive.1` — entry rewritten to A/B/C/D levels; `## Flow fit` blocks; hooks and harness integrations inject the new entry |
-| `803d75f` | `6.3.0-adaptive.2` — the seven review findings, the cross-reference audit, risk floor / evidence floor / anti-ceremony, token-accounting fix |
-| `77270e9` | `executing-plans` consent clarification (the main/master line read as "always ask first") |
+| `801eb14` | `6.3.0-adaptive.1` — entry rewritten to A/B/C/D levels; `## Flow fit` blocks; hooks and harness integrations inject the new entry |
+| `13940c3` | `6.3.0-adaptive.2` — the seven review findings, the cross-reference audit, risk floor / evidence floor / anti-ceremony, token-accounting fix |
+| `843fe51` | `executing-plans` consent clarification (the main/master line read as "always ask first") |
+| `eedc6cf` | Publish preparation — bilingual README, `NOTICE.md`, `docs/adaptive/`, and `verification/` (no skill or hook content) |
+| `ba3afa8` | Stop shipping generated test traces inside scenario fixtures; re-run the affected criteria |
