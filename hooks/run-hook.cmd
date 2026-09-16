@@ -9,6 +9,15 @@ REM "session-start.sh") so Claude Code's Windows auto-detection -- which
 REM prepends "bash" to any command containing .sh -- doesn't interfere.
 REM
 REM Usage: run-hook.cmd <script-name> [args...]
+REM
+REM bash discovery order (Windows):
+REM   1. %CLAUDE_CODE_GIT_BASH_PATH%  -- Claude Code's own variable on Windows
+REM   2. %SUPERPOWERS_BASH%           -- explicit override for this plugin
+REM   3. standard Git for Windows locations (machine-wide and per-user)
+REM   4. derived from `where git`     -- covers Git installed anywhere else
+REM   5. bash on PATH, skipping the WSL launchers (System32 and the WindowsApps
+REM      alias): they cannot execute Windows paths like C:\..., so silently
+REM      falling back to them breaks SessionStart injection with no error.
 
 if "%~1"=="" (
     echo run-hook.cmd: missing script name >&2
@@ -16,27 +25,44 @@ if "%~1"=="" (
 )
 
 set "HOOK_DIR=%~dp0"
+set "BASH_EXE="
 
-REM Try Git for Windows bash in standard locations
-if exist "C:\Program Files\Git\bin\bash.exe" (
-    "C:\Program Files\Git\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
-)
-if exist "C:\Program Files (x86)\Git\bin\bash.exe" (
-    "C:\Program Files (x86)\Git\bin\bash.exe" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
+if not defined BASH_EXE if defined CLAUDE_CODE_GIT_BASH_PATH if exist "%CLAUDE_CODE_GIT_BASH_PATH%" set "BASH_EXE=%CLAUDE_CODE_GIT_BASH_PATH%"
+if not defined BASH_EXE if defined SUPERPOWERS_BASH if exist "%SUPERPOWERS_BASH%" set "BASH_EXE=%SUPERPOWERS_BASH%"
+if not defined BASH_EXE if exist "%ProgramFiles%\Git\bin\bash.exe" set "BASH_EXE=%ProgramFiles%\Git\bin\bash.exe"
+if not defined BASH_EXE if exist "%ProgramFiles(x86)%\Git\bin\bash.exe" set "BASH_EXE=%ProgramFiles(x86)%\Git\bin\bash.exe"
+if not defined BASH_EXE if exist "%LOCALAPPDATA%\Programs\Git\bin\bash.exe" set "BASH_EXE=%LOCALAPPDATA%\Programs\Git\bin\bash.exe"
+
+REM Ask git where it lives, then look for bash next to it (any install location)
+if not defined BASH_EXE (
+    for /f "delims=" %%G in ('where git 2^>nul') do (
+        if not defined BASH_EXE (
+            for %%D in ("%%~dpG..") do (
+                if exist "%%~fD\bin\bash.exe" set "BASH_EXE=%%~fD\bin\bash.exe"
+                if not defined BASH_EXE if exist "%%~fD\usr\bin\bash.exe" set "BASH_EXE=%%~fD\usr\bin\bash.exe"
+            )
+        )
+    )
 )
 
-REM Try bash on PATH (e.g. user-installed Git Bash, MSYS2, Cygwin)
-where bash >nul 2>nul
-if %ERRORLEVEL% equ 0 (
-    bash "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
-    exit /b %ERRORLEVEL%
+if not defined BASH_EXE (
+    for /f "delims=" %%B in ('where bash 2^>nul') do (
+        if not defined BASH_EXE (
+            echo %%B | findstr /i /c:"system32" /c:"windowsapps" >nul
+            if errorlevel 1 set "BASH_EXE=%%B"
+        )
+    )
 )
 
-REM No bash found - exit silently rather than error
-REM (plugin still works, just without SessionStart context injection)
-exit /b 0
+if not defined BASH_EXE (
+    echo run-hook.cmd: no usable bash found - set CLAUDE_CODE_GIT_BASH_PATH or SUPERPOWERS_BASH to your Git Bash ^(e.g. C:\Program Files\Git\bin\bash.exe^) >&2
+    REM Exit 0 anyway so the session still starts; the line above says why the
+    REM SessionStart context was not injected.
+    exit /b 0
+)
+
+"%BASH_EXE%" "%HOOK_DIR%%~1" %2 %3 %4 %5 %6 %7 %8 %9
+exit /b %ERRORLEVEL%
 CMDBLOCK
 
 # Unix: run the named script directly
