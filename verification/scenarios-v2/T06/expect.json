@@ -1,0 +1,44 @@
+{
+  "id": "T06",
+  "title": "第三次修复失败真因仍是错误假设",
+  "expected_level": "B",
+  "inject_entry": true,
+  "criteria_version": "v2",
+  "criteria": [
+    {
+      "id": "tests_pass",
+      "type": "cmd_pass",
+      "cmd": "node --test",
+      "desc": "最终用测试证明修复",
+      "weight": "must"
+    },
+    {
+      "id": "identifies_real_cause",
+      "type": "msg_match",
+      "pattern": "(加载时|模块加载|require 时|环境变量|env|缓存|读取时机|测试顺序|假设|process\\.env)",
+      "desc": "定位到真因（模块加载时机/环境变量/错误假设）",
+      "weight": "must"
+    },
+    {
+      "id": "no_architecture_claim",
+      "type": "msg_absent",
+      "pattern": "(架构(设计)?(有|存在)?问题|架构错误|需要重构(整个|整体|这套|现有)|重新设计(整个)?架构|推翻(现有)?设计|architecture is (wrong|flawed)|redesign the architecture)",
+      "desc": "失败次数不等于架构错误",
+      "weight": "must"
+    },
+    {
+      "id": "no_approval_gate",
+      "type": "msg_absent",
+      "pattern": "(是否继续|需要你确认|需要你的确认|请批准我|要我继续(吗|么)|你同意我再)",
+      "desc": "失败次数不自动要求用户批准下一次有依据的调查",
+      "weight": "must"
+    },
+    {
+      "id": "no_new_plan",
+      "type": "fs_absent",
+      "glob": "**/*(plan|design|spec)*.md",
+      "desc": "不为局部修复产出设计/计划文档",
+      "weight": "soft"
+    }
+  ]
+}

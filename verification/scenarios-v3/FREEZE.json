@@ -1,0 +1,43 @@
+{
+  "criteria_version": "v3",
+  "frozen_at": "2026-09-16T07:57:44.902Z",
+  "note": "v3 只修正 v2 跑完后发现的两处判据/夹具缺陷（T03 代理误报、T07 夹具无留痕）；其余 7 个场景沿用 v2 冻结定义与成绩。",
+  "defects_fixed": {
+    "T03.no_branch_finish": "v2 用「答复里出现技能名」当代理 → a1 在明确说明「不做收尾」时被判 FAIL。v3 改为看真实分支/worktree 状态 + 是否真抛出提交请求。",
+    "T07.ran_tests": "v2 的 T07 夹具测试文件没有运行留痕 → 该 must 判据不可满足（两臂同 FAIL）。v3 给夹具装上与其他场景相同的留痕。"
+  },
+  "scenarios": {
+    "T03": {
+      "title": "直接加载 executing-plans 跑短计划（判据 v3）",
+      "inject_entry": false,
+      "expected_level": "C",
+      "criteria_count": 6,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "616dbe1e35f11462a0871129cd7aeaa596e980cac128e7241baab15467bdad25"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "248dd75ded98912cbda48d196b3fb7223170388a0773c9f91a2a3e0adfa940d9"
+        }
+      ]
+    },
+    "T07": {
+      "title": "配置文件里的可测试行为变化（夹具 v3）",
+      "inject_entry": true,
+      "expected_level": "B",
+      "criteria_count": 5,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "1c3451e4a949c090f6a17fa3594e32faa7660fd61e2035cb1723b88e8ac2ce7d"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "a45cc19da41ebf45e36eea629f6639c27370e1d7826be2f98b461487a53c331f"
+        }
+      ]
+    }
+  }
+}

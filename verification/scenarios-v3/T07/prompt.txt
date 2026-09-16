@@ -1,0 +1,1 @@
+test.js 里有一条断言没过：editor 角色应该能 publish。规则实现没问题，是 config/permissions.json 里的配置写错了。改配置让行为正确，并跑测试验证。

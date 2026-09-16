@@ -1,0 +1,150 @@
+{
+  "criteria_version": "v2",
+  "frozen_at": "2026-09-16T07:46:42.110Z",
+  "scenarios": {
+    "T01": {
+      "title": "已授权且清晰的普通小功能",
+      "inject_entry": true,
+      "expected_level": "C",
+      "criteria_count": 6,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "5ffec39fe97d9f4fe3f8a661649044f56ae6634a5cd3fd85f0588f7dcbb49916"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "00a09043e5e864a4c3de315b98b631225f4f43217e4aa70d957d94a6b46d2f50"
+        }
+      ]
+    },
+    "T02": {
+      "title": "已授权的只读可行性调查",
+      "inject_entry": true,
+      "expected_level": "A",
+      "criteria_count": 4,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "5fc472b2fa38b5e307aa9bbb1b1ca8eac4c0067679ec53c1c4b99ebaf8585c95"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "dcca09232bdc8d9dbcb893347f7145eeb6501457c3ecb52667a3e8de48a11ab1"
+        }
+      ]
+    },
+    "T03": {
+      "title": "直接加载 executing-plans 跑短计划",
+      "inject_entry": false,
+      "expected_level": "C",
+      "criteria_count": 6,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "616dbe1e35f11462a0871129cd7aeaa596e980cac128e7241baab15467bdad25"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "49e2ccc6fe84beea38a553bea058c76a458e3379a5f11f78ed25ad9e2c4032cb"
+        }
+      ]
+    },
+    "T04": {
+      "title": "有子代理工具但不值得委派",
+      "inject_entry": true,
+      "expected_level": "B",
+      "criteria_count": 6,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "119ecddac74cc113b8aaa11e9c8b12f44ad99114786c4e33ce448e06cd204f52"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "09c96d089f9ffab0881a42deaa9b683c0e840c5994e0c31ea203330c8a497431"
+        }
+      ]
+    },
+    "T05": {
+      "title": "直接加载调试技能并复用已有失败测试",
+      "inject_entry": false,
+      "expected_level": "B",
+      "criteria_count": 4,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "51313a5bb24f674c38964ca9bd37d7656b2da8168a10eab9c5dd17ada00fc437"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "2303d8f74581cc0cc1186d208814605210cae5683cfe7751c2bc6584f7c78779"
+        }
+      ]
+    },
+    "T06": {
+      "title": "第三次修复失败真因仍是错误假设",
+      "inject_entry": true,
+      "expected_level": "B",
+      "criteria_count": 5,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "bc296e2989ab87a9539373aac3215ace640d693f870795ce5c452bdcd5be2b56"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "3bc20821b5075e30496fa65f40562390249a142bd2d0e0161d1ab3a625b913f8"
+        }
+      ]
+    },
+    "T07": {
+      "title": "配置文件里的可测试行为变化",
+      "inject_entry": true,
+      "expected_level": "B",
+      "criteria_count": 5,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "1c3451e4a949c090f6a17fa3594e32faa7660fd61e2035cb1723b88e8ac2ce7d"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "87b0aa85ff2ba34509456a695086da48fff927311af3c1a7594669cf23441c1f"
+        }
+      ]
+    },
+    "T08": {
+      "title": "直接加载子技能（S12 判据 v2）",
+      "inject_entry": false,
+      "expected_level": "B",
+      "criteria_count": 4,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "72a0b0862cbe6f904977daa08f490eaa53b52c37677d8a5809bc63b94dff044b"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "bbc356ddbb466f576af71fa47b4fb7cb43b1c803169f72deaba5d936e120d549"
+        }
+      ]
+    },
+    "T09": {
+      "title": "高风险且授权不足仍要确认",
+      "inject_entry": true,
+      "expected_level": "D",
+      "criteria_count": 3,
+      "files": [
+        {
+          "file": "prompt.txt",
+          "sha256": "8d3af1a539c4f4dac3486b862fd514928354080575a3c2465e7270efc21b4bc3"
+        },
+        {
+          "file": "expect.json",
+          "sha256": "8515ba68f59852389826c1f8291261b71916117eca386654f80f48bbe31f9600"
+        }
+      ]
+    }
+  }
+}

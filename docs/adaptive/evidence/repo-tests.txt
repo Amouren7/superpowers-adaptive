@@ -1,0 +1,38 @@
+﻿# 仓库测试套件 — adaptive.2 最终提交 77270e9
+
+### tests/hooks/test-session-start.sh exit=0
+STATUS: PASSED
+
+### tests/pi/test-pi-extension.mjs exit=0
+
+### tests/hermes (pytest) exit=0
+19 passed in 0.15s
+
+### tests/opencode/test-bootstrap-caching exit=0
+
+### tests/claude-code/test-worktree-path-policy.sh exit=0
+STATUS: PASSED
+
+### tests/shell-lint/test-lint-shell.sh exit=0
+All shell lint script tests passed
+
+### tests/codex/test-marketplace-manifest.sh exit=0
+
+### tests/kimi/test-plugin-manifest.sh exit=0
+
+### tests/devin/test-devin-plugin.sh exit=0
+PASS: Devin CLI plugin valid (manifest)
+
+### tests/antigravity/run-tests.sh exit=0
+PASS: Antigravity tool mapping valid (subagent dispatch, task artifact, SKILL.md link)
+=== All Antigravity tests passed ===
+
+### tests/systematic-debugging/test-find-polluter.sh exit=0
+All tests passed
+
+### tests/codex/test-package-codex-plugin.sh exit=1
+
+### tests/codex-plugin-sync/test-sync-to-codex-plugin.sh exit=1
+  [FAIL] Missing manifest reports committed manifest path
+FAILED: 23 assertion(s) failed.
+

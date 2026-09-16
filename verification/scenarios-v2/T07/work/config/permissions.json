@@ -1,0 +1,7 @@
+{
+  "roles": {
+    "viewer": { "read": true, "publish": false },
+    "editor": { "read": true, "publish": false },
+    "admin": { "read": true, "publish": true }
+  }
+}

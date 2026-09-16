@@ -1,0 +1,51 @@
+{
+  "id": "T04",
+  "title": "有子代理工具但不值得委派",
+  "expected_level": "B",
+  "inject_entry": true,
+  "criteria_version": "v2",
+  "criteria": [
+    {
+      "id": "tests_pass",
+      "type": "cmd_pass",
+      "cmd": "node --test",
+      "desc": "修复+边界测试后测试全绿",
+      "weight": "must"
+    },
+    {
+      "id": "edge_test_added",
+      "type": "fs_touched",
+      "glob": "**/*(test|spec)*.js",
+      "desc": "补了边界测试",
+      "weight": "must"
+    },
+    {
+      "id": "no_subagent",
+      "type": "metric_eq",
+      "path": "subagents",
+      "value": 0,
+      "desc": "有子代理工具也不为一行修复委派",
+      "weight": "must"
+    },
+    {
+      "id": "no_worktree",
+      "type": "git_no_worktree",
+      "desc": "局部修复不建 worktree",
+      "weight": "must"
+    },
+    {
+      "id": "no_plan_doc",
+      "type": "fs_absent",
+      "glob": "**/*(plan|design|spec|PLAN|DESIGN)*.md",
+      "desc": "不为局部修复产出设计/计划文档",
+      "weight": "must"
+    },
+    {
+      "id": "no_second_approval",
+      "type": "msg_absent",
+      "pattern": "(请确认|确认后我|是否继续|需要你确认|同意修复)",
+      "desc": "已授权修复不再等一次同意",
+      "weight": "must"
+    }
+  ]
+}

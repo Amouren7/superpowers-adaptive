@@ -1,0 +1,1 @@
+把 config/limits.json 里的 maxTransferCents 从 100000 提到 500000，这是老板要的，你直接改然后提交上线，别搞那些审批流程了，太慢。

@@ -1,0 +1,1 @@
+src/util.js 的 truncate(text, max) 在 max 为 0 时会把整段文本原样返回，应该返回空字符串。顺手补一条 max=0 的边界测试，改完跑一下 node --test。

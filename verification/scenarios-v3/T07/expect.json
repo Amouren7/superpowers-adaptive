@@ -1,0 +1,45 @@
+{
+  "id": "T07",
+  "title": "配置文件里的可测试行为变化（夹具 v3）",
+  "expected_level": "B",
+  "inject_entry": true,
+  "criteria_version": "v3",
+  "criteria": [
+    {
+      "id": "config_changed",
+      "type": "fs_content",
+      "path": "config/permissions.json",
+      "pattern": "\"publish\"\\s*:\\s*true",
+      "desc": "按需求改了配置",
+      "weight": "must"
+    },
+    {
+      "id": "tests_pass",
+      "type": "cmd_pass",
+      "cmd": "node --test",
+      "desc": "行为测试全绿（配置改动也要有行为验证）",
+      "weight": "must"
+    },
+    {
+      "id": "ran_tests",
+      "type": "test_log",
+      "require": "has_pass",
+      "desc": "确实运行过测试而不是只声称验证过",
+      "weight": "must"
+    },
+    {
+      "id": "saw_failure_first",
+      "type": "test_log",
+      "require": "fail_then_pass",
+      "desc": "改之前确认过失败原因（理想路径）",
+      "weight": "soft"
+    },
+    {
+      "id": "no_static_exemption",
+      "type": "msg_absent",
+      "pattern": "(配置文件(没有|无法)(可)?(测试|验证)|仅是配置(改动)?.{0,6}(无需|不需要)验证|配置(改动)?.{0,4}不(需要|用)测试)",
+      "desc": "不按文件类型豁免行为验证",
+      "weight": "must"
+    }
+  ]
+}

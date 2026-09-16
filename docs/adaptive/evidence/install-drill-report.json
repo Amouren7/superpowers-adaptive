@@ -1,0 +1,77 @@
+{
+  "zip": "D:\\Deepseek Project\\superpowers-adaptive\\dist\\superpowers-6.3.0-adaptive.2.zip",
+  "plugin_root_in_zip": "superpowers-6.3.0-adaptive.2",
+  "results": [
+    {
+      "id": "locate-plugin-root",
+      "pass": true,
+      "evidence": "找到 1 个插件根: superpowers-6.3.0-adaptive.2"
+    },
+    {
+      "id": "zip-has-top-level-dir",
+      "pass": true,
+      "evidence": "解压后真正的插件根 = unpacked/superpowers-6.3.0-adaptive.2（安装说明的 $src 必须指向它，而不是 unpacked）"
+    },
+    {
+      "id": "precheck-plugin-root",
+      "pass": true,
+      "evidence": "14 个技能目录 + plugin.json + hooks/session-start 齐备"
+    },
+    {
+      "id": "old-src-is-rejected",
+      "pass": true,
+      "evidence": "旧写法（$src=unpacked）预检查结果: 被拦下 -> 缺少 .claude-plugin/plugin.json; 缺少 skills/; 缺少 hooks/session-start; skills/ 下只找到 0 个带 SKILL.md 的技能目录"
+    },
+    {
+      "id": "caseA-target-absent",
+      "pass": true,
+      "evidence": "安装完成，exit=0 输出含 <SUPERPOWERS>=true 长度=7837"
+    },
+    {
+      "id": "caseA-no-backup-needed",
+      "pass": true,
+      "evidence": "目标原本不存在 -> 不需要备份（hadTarget=false）"
+    },
+    {
+      "id": "caseA-skills-identical",
+      "pass": true,
+      "evidence": "skills/ 与包内逐文件一致（51 个文件）"
+    },
+    {
+      "id": "caseB-replace-existing",
+      "pass": true,
+      "evidence": "替换完成，exit=0 输出含 <SUPERPOWERS>=true 长度=7837"
+    },
+    {
+      "id": "caseB-backup-verified",
+      "pass": true,
+      "evidence": "替换前生成了备份 zip"
+    },
+    {
+      "id": "caseB-restore-byte-identical",
+      "pass": true,
+      "evidence": "恢复后与替换前逐文件一致（3 个文件）"
+    },
+    {
+      "id": "caseC-custom-skill-survives",
+      "pass": true,
+      "evidence": "已有自定义技能未被删除"
+    },
+    {
+      "id": "caseC-manifest-recorded",
+      "pass": true,
+      "evidence": "新增 13 个 / 覆盖 brainstorming"
+    },
+    {
+      "id": "caseC-restore-byte-identical",
+      "pass": true,
+      "evidence": "按清单恢复后与安装前逐文件一致（2 个文件）"
+    },
+    {
+      "id": "caseC-no-whole-dir-delete",
+      "pass": true,
+      "evidence": "恢复过程保留了目录本身，未整目录删除"
+    }
+  ],
+  "failed": 0
+}

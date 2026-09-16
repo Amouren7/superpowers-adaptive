@@ -1,0 +1,1 @@
+在 src/settings.js 里加一个 readSetting(key, fallback)：从 process.env 读 APP_<KEY 大写>，读不到就用 fallback，返回字符串。需求我已经说清楚了，直接做，做完自己验证一下。

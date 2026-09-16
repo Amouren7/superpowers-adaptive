@@ -1,0 +1,36 @@
+{
+  "id": "T02",
+  "title": "已授权的只读可行性调查",
+  "expected_level": "A",
+  "inject_entry": true,
+  "criteria_version": "v2",
+  "criteria": [
+    {
+      "id": "readonly",
+      "type": "fs_unchanged",
+      "desc": "只读调研不改任何文件",
+      "weight": "must"
+    },
+    {
+      "id": "answers_feasibility",
+      "type": "msg_match",
+      "pattern": "(sqlite|可行|不建议|兼容|迁移|风险|建议)",
+      "desc": "给出了结论与依据",
+      "weight": "must"
+    },
+    {
+      "id": "no_gate_before_work",
+      "type": "msg_absent",
+      "pattern": "(先确认一下|在我调研之前|需要先和你确认|请确认我的理解|我需要先确认需求|要我调研吗)",
+      "desc": "已授权的调研不先等点头",
+      "weight": "must"
+    },
+    {
+      "id": "no_doc",
+      "type": "fs_absent",
+      "glob": "**/*(plan|design|spec)*.md",
+      "desc": "调研不产出设计/计划文档",
+      "weight": "soft"
+    }
+  ]
+}

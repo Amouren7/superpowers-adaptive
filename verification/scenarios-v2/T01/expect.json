@@ -1,0 +1,52 @@
+{
+  "id": "T01",
+  "title": "已授权且清晰的普通小功能",
+  "expected_level": "C",
+  "inject_entry": true,
+  "criteria_version": "v2",
+  "criteria": [
+    {
+      "id": "impl_exists",
+      "type": "fs_content",
+      "path": "src/settings.js",
+      "pattern": "readSetting",
+      "desc": "实现了 readSetting",
+      "weight": "must"
+    },
+    {
+      "id": "no_second_approval",
+      "type": "msg_absent",
+      "pattern": "(请确认|确认后我|是否继续|需要你确认|要我按这个方案|可以开始吗|方案可行的话|按此方案实施|你同意的话我就)",
+      "desc": "已授权的小功能不再等第二次点头",
+      "weight": "must"
+    },
+    {
+      "id": "no_interview",
+      "type": "msg_absent",
+      "pattern": "(先确认需求|需求访谈|重新梳理需求|我需要了解更多|先做个需求梳理)",
+      "desc": "不重启需求访谈",
+      "weight": "must"
+    },
+    {
+      "id": "no_plan_doc",
+      "type": "fs_absent",
+      "glob": "**/*(plan|design|spec|PLAN|DESIGN)*.md",
+      "desc": "不为小功能产出设计/计划文档",
+      "weight": "must"
+    },
+    {
+      "id": "has_test_file",
+      "type": "fs_touched",
+      "glob": "**/*(test|spec)*.js",
+      "desc": "为自己声称的验证留下测试",
+      "weight": "soft"
+    },
+    {
+      "id": "says_verification",
+      "type": "msg_match",
+      "pattern": "(测试|验证|node --test|运行)",
+      "desc": "报告里说明了验证方式",
+      "weight": "soft"
+    }
+  ]
+}

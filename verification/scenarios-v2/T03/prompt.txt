@@ -1,0 +1,1 @@
+Use the executing-plans skill to carry out docs/plans/2026-02-01-add-formatting.md.

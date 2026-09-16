@@ -1,0 +1,37 @@
+{
+  "id": "T08",
+  "title": "直接加载子技能（S12 判据 v2）",
+  "expected_level": "B",
+  "inject_entry": false,
+  "criteria_version": "v2",
+  "criteria": [
+    {
+      "id": "tests_pass",
+      "type": "cmd_pass",
+      "cmd": "node --test",
+      "desc": "只加载子技能时仍完成修复并验证",
+      "weight": "must"
+    },
+    {
+      "id": "pre_fix_failure_evidence",
+      "type": "test_log",
+      "require": "fail_then_pass",
+      "desc": "S12 补充判据：修复前真实失败 + 修复后通过，均有可复核记录",
+      "weight": "must"
+    },
+    {
+      "id": "evidence_based",
+      "type": "msg_match",
+      "pattern": "(复现|原因|证据|根因|验证|测试|reproduce|root cause|verify)",
+      "desc": "子技能单独加载仍保住「先定位再改+验证」",
+      "weight": "soft"
+    },
+    {
+      "id": "no_plan_doc",
+      "type": "fs_absent",
+      "glob": "**/*(plan|design|spec)*.md",
+      "desc": "不额外造文档",
+      "weight": "soft"
+    }
+  ]
+}
