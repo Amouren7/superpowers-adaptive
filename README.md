@@ -79,6 +79,8 @@ git clone https://github.com/Amouren7/superpowers-adaptive
 claude --plugin-dir "/path/to/superpowers-adaptive"
 ```
 
+The fork's work lives on the **`adaptive-flow`** branch (branched from upstream `v6.3.0`); it is the default branch here, so a plain clone checks it out. The fork's `main` tracks upstream and is left alone.
+
 **Any harness with a project-level skills directory** (Claude Code, DSH, …): copy this repo's `skills/` into the project, recording what you added or overwrote so you can roll back — the safe procedure (pre-checks, backup, manifest-driven restore) is in [`docs/adaptive/install-restore.md`](docs/adaptive/install-restore.md).
 
 **Other harnesses** (Codex, Cursor, Gemini, Copilot, Kimi, OpenCode, Pi, Hermes, Antigravity, Devin, Factory Droid, Grok): the same integration points as upstream, described in [`README.upstream.md`](README.upstream.md) — substitute this repository's URL for `obra/superpowers`.
@@ -200,6 +202,8 @@ Superpowers 的技能质量很高，问题出在入口规则：改一个错别�
 git clone https://github.com/Amouren7/superpowers-adaptive
 claude --plugin-dir "/path/to/superpowers-adaptive"
 ```
+
+本 fork 的改动在 **`adaptive-flow`** 分支上（从上游 `v6.3.0` 分出），它同时是本仓库的默认分支，直接 clone 即得到它；仓库的 `main` 跟随上游、保持原样。
 
 **任何支持项目级技能目录的 harness**（Claude Code、DSH 等）：把本仓库 `skills/` 放进项目里，并**记录本次新增/覆盖了哪些**以便回滚——安全步骤（预检查、备份、按清单恢复）见 [`docs/adaptive/install-restore.md`](docs/adaptive/install-restore.md)。
 

@@ -5,3 +5,4 @@ home-*/
 pkgs/
 sandbox-install/
 evidence-pkg/
+.eval-test-runs.log
