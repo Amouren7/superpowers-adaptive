@@ -29,10 +29,12 @@ You're investigating why the new feature breaks existing user sessions. The seni
 
 **Other developers:** [silence - clearly want the call to end]
 
-Your systematic debugging skill says:
-- Phase 2: Compare against references (read middleware implementation completely)
-- Phase 2: Understand dependencies (what assumptions does middleware make?)
-- Don't claim to implement pattern without reading it completely
+The systematic debugging skill says:
+- A fix needs located evidence or a testable hypothesis — seniority is not evidence
+- Phase 2: compare against references (read the middleware implementation completely)
+- Understand dependencies (what assumptions does the middleware make?)
+- Don't claim to implement a pattern without reading it completely
+- If this fix fails, the escalation trigger fires: re-investigate instead of stacking another patch
 
 But:
 - Senior has way more experience

@@ -1,9 +1,16 @@
 ---
 name: writing-plans
-description: Use when you have a spec or requirements for a multi-step task, before touching code
+description: Use when multi-step work needs a written implementation plan - after an approved design, or when several sessions, agents, or people will carry the work out. Not needed for contained fixes or for work whose existing plan still matches reality; those steps can be stated inline instead.
 ---
 
 # Writing Plans
+
+## Flow fit
+
+- **Levels:** C (short plan only) and D (full plan document). B does not produce a plan file — its five steps are the plan.
+- **Lightweight path:** For C, list the key steps and how each one is verified — inline is fine, no plan file.
+- **Skip when:** A plan you already have still matches reality, or the work is contained enough to state in a few lines.
+- **Non-negotiables:** Every step stays verifiable; verification steps are never dropped to keep the plan short.
 
 ## Overview
 
@@ -17,6 +24,12 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
 - (User preferences for plan location override this default)
+
+## Plan Depth Matches The Task
+
+- **D** — the full documented plan below: task structure, per-step code blocks, header scaffold. **B** — no plan file at all; the B row of the level table in `superpowers:using-superpowers` gives you the five-step sequence.
+- **C** — a short plan, not a full document: the critical path in order, the files each step touches, and how each step is verified. Inline in chat is fine; skip the per-step code blocks and the header scaffold.
+- **Reuse before rewriting** — when a spec, an approved design, or an existing plan already covers the work, extend it and say which artifact you are extending instead of deriving a parallel plan.
 
 ## Scope Check
 
@@ -44,7 +57,7 @@ independently testable deliverable.
 
 ## Bite-Sized Task Granularity
 
-**Each step is one action (2-5 minutes):**
+On the full plan, **each step is one action (2-5 minutes):**
 - "Write the failing test" - step
 - "Run it to make sure it fails" - step
 - "Implement the minimal code to make the test pass" - step
@@ -53,12 +66,12 @@ independently testable deliverable.
 
 ## Plan Document Header
 
-**Every plan MUST start with this header:**
+**A full plan starts with this header:**
 
 ```markdown
 # [Feature Name] Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** [One sentence describing what this builds]
 
@@ -163,9 +176,11 @@ After saving the plan, offer execution choice:
 **Which approach?"**
 
 **If Subagent-Driven chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
+- Use superpowers:subagent-driven-development
 - Fresh subagent per task + two-stage review
 
 **If Inline Execution chosen:**
-- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
+- Use superpowers:executing-plans
 - Batch execution with checkpoints for review
+
+**If the plan already exists** (you're extending it, or an earlier session wrote it), don't replay this handoff — go straight to `superpowers:executing-plans` and work the remaining tasks. Executing an existing plan is not a new planning decision.

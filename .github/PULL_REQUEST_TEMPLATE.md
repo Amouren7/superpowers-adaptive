@@ -74,27 +74,27 @@ of human involvement will be closed without review.
      integration actually works.
 
      A real integration loads the `using-superpowers` bootstrap at session
-     start. The bootstrap is what causes skills to auto-trigger. Without
-     it, the skills are dead weight — present on disk but never invoked
-     at the right moments.
+     start. The bootstrap is what teaches the model to classify the task
+     (A/B/C/D) and load the matching skills. Without it, the skills are
+     dead weight — present on disk but never invoked at the right moments.
 
      ACCEPTANCE TEST: Open a clean session in the new harness and send
      exactly this user message:
 
          Let's make a react todo list
 
-     A working integration auto-triggers the `brainstorming` skill before
-     any code is written. Paste the complete transcript below.
+     That is a level C request, so a working integration loads the
+     `brainstorming` skill before any code is written. Paste the complete
+     transcript below, plus one level A or B message showing the agent
+     answers or fixes it directly with no design interview.
 
      These are NOT real integrations and PRs that ship them will be closed:
 
      - Manually copying skill files into the harness
      - Wrapping with `npx skills` or similar at-runtime shims
      - Anything that requires the user to opt in to skills per-session
-     - Anything where brainstorming does not auto-trigger on the test above
-
-     If you are not sure whether your integration loads the bootstrap at
-     session start, it does not.
+     - Anything where the entry bootstrap never reaches the model on the
+       acceptance test above (no classification, no skill loading)
 -->
 
 <details>

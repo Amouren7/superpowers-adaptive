@@ -1,30 +1,30 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: Use when a request needs its intent, requirements, and design explored before implementation - new features, new subsystems, or changes to shared interfaces and data models. Not needed for explanations, lookups, read-only analysis, or a contained fix whose cause is already evidenced and whose implementation was already requested.
 ---
 
 # Brainstorming Ideas Into Designs
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Help turn ideas into fully formed designs and specs through natural collaborative dialogue, at the depth the path calls for.
 
-Start by classifying how much process the request needs, then work
-through your path: understand the context, refine the idea, present a
-design, and get your human partner's approval.
+## Flow fit
+
+- **Levels:** C (short alignment) and D (full design exploration and sign-off); Spike answers the feasibility question that precedes either; B goes straight to the evidenced fix. **Lightweight path:** for C, name the approach, the files it touches, and how you'll verify it, then proceed.
+- **Skip when:** A design, spec, or plan for this work already exists, or your human partner already asked for this specific fix — work the delta instead of re-running the exploration.
+- **Non-negotiables:** Never implement against an unagreed design; never treat an assumption you have not raised as one.
 
 <HARD-GATE>
-Do NOT invoke any implementation skill, write any code, scaffold any
-project, or take any implementation action until you have told your
-human partner what you intend and they have approved it. This applies
-to EVERY task on EVERY path below — the ceremony scales with the task;
-the approval gate never does.
+Do NOT write code, scaffold a project, or take any implementation
+action on a design decision your human partner has not agreed to. A
+requested fix whose cause is already evidenced and contained is
+already authorized — that is not an unapproved design decision; do
+not stop for a second approval, and do not re-ask what the request
+already answers.
 </HARD-GATE>
 
 ## Three Paths
 
-Before your first question, classify the request and say the
-classification out loud — "this looks bounded, so I'll present a short
-design here rather than write a spec" — so your human partner can
-override it:
+Before your first question, classify the request and say the classification in one line — "this looks bounded, so I'll present a short design here rather than write a spec" — so your human partner can override it; a classification is not a document, so don't narrate it.
 
 - **Spike** — a feasibility question ("can we...", "is it possible...",
   "quick and dirty is fine") whose output is an answer, not code you
@@ -39,38 +39,46 @@ override it:
   flow to change, the task is not bounded. Ask the clarifying
   questions that matter, present a short design IN CHAT (a few
   sentences to a few short paragraphs), and STOP. Implementation
-  starts only after your human partner says yes to that design — a
-  bounded task's approval is as hard a gate as an architectural
-  one. No spec file, no implementation plan document.
+  starts once your human partner agrees to that design — and for a fix
+  they already asked for, that agreement is the request itself. No
+  spec file, no implementation plan document.
 - **Architectural** — new projects, new subsystems, changes that
   restructure how components fit together or alter interfaces others
   depend on. Follow the full process: questions, approaches, sectioned
   design, written spec, then the writing-plans skill.
 
-When in doubt between two paths, take the heavier one. The ratchet is
-one-way: hidden complexity discovered mid-task upgrades the path —
-stop, say so, and step up. Nothing downgrades mid-task.
+When in doubt between two paths, take the heavier one. Hidden complexity
+discovered mid-task upgrades the path — stop, say so, and step up. If
+investigation shows the task is smaller than assumed, you may step down,
+with one line saying why: you are dropping process you have not executed,
+never verification or a risk control.
 
-## Anti-Pattern: "Too Simple To Need Approval"
+**Existing design, existing agreement.** If a spec, plan, or agreed
+design already covers this work, do not re-run the exploration. Read
+it, say where the agreement lives, and handle only the delta. This is
+inherited context, not a new project.
 
-Every path ends with your human partner approving your intent before
-implementation. A todo list, a single-function utility, a config
-change — the design may be two sentences in chat, but you MUST present
-it and get approval. "Simple" tasks are where unexamined assumptions
-cause the most wasted work. What scales with simplicity is the
-artifact, never the approval.
+## Anti-Pattern: "Too Simple To Need A Conversation"
+
+A design decision still gets said out loud before it is built — a todo
+list, a single-function utility, a config change all deserve a sentence
+naming what you are about to do. What scales with simplicity is the
+artifact, never the truthfulness of the agreement. The opposite failure
+is just as real: re-asking for approval on the fix your human partner
+already requested, and re-opening decisions that an approved design or
+plan already settled.
 
 ## Red Flags
 
 | Thought | Reality |
 |---------|---------|
-| "This is too simple to need a design" | Simple means a short design, not no design. Two sentences in chat, then approval. |
-| "I'll call it bounded and skip the spec" | Reaching for a label to skip work IS the doubt — take the heavier path. |
-| "It's bounded and the design is obvious — I'll start while they read it" | The gate is the approval, not the design's length. Present, then stop until you hear yes. |
+| "This is too simple to need a design" | Simple means a short design, not no design. Say what you intend, then work. |
+| "I'll call it bounded and skip the spec" | `bounded` describes the repo, not the amount of thinking you want to skip. |
+| "It's bounded and the design is obvious — I'll start while they read it" | An unagreed design decision waits. A fix they already asked for does not — say the approach as you go. |
 | "I understand this kind of app, so it's bounded" | Bounded measures the repo, not your familiarity. A new project has no existing flow — it is architectural. |
 | "The spike works, so I'll keep the code" | A spike's output is an answer. Keeping the code is a new request — classify it. |
 | "It grew, but I'm almost done — no need to re-classify" | Hidden complexity upgrades the path mid-task. Stop and say so. |
-| "They approved the spike, so the follow-up change is approved too" | Each task gets its own classification and its own approval. |
+| "They asked for the fix, so I can skip the design entirely" | The fix is authorized; the *design decision* inside it is not. Say the approach in one line, then proceed — reviews and follow-ups inherit that design and authorization, so work the delta. |
 
 ## Checklist
 
@@ -80,15 +88,15 @@ your path and complete them in order.
 **Spike:**
 1. **Explore project context** — enough to frame the probe
 2. **Present question + probe plan** — 2-3 sentences
-3. **Get approval** — a nod is enough
+3. **Get a nod** — enough to start probing
 4. **Investigate** — as cheaply as correctness allows
 5. **Report findings** — a recommendation; label anything built as throwaway
 
 **Bounded:**
 1. **Explore project context** — check files, docs, recent commits
-2. **Ask clarifying questions** — one at a time, the ones that matter
+2. **Ask clarifying questions** — one at a time, only the ones the request and the code do not already answer
 3. **Present short design in chat** — approach, files touched, testing
-4. **Get approval** — STOP and wait for an explicit yes; presenting the design and starting in the same breath is skipping the gate
+4. **Align and proceed** — an explicit yes, or the fix request your human partner already made; never implement a design decision they have not heard
 5. **Implement** — proceed with the normal development workflow (TDD applies); no plan document
 
 **Architectural:**
@@ -131,7 +139,7 @@ digraph brainstorming {
     "Ask clarifying questions (bounded)" -> "Present short design in chat";
     "Present short design in chat" -> "Human approves?";
     "Human approves?" -> "Investigate; report recommendation" [label="spike: yes"];
-    "Human approves?" -> "Implement via normal workflow (no plan doc)" [label="bounded: yes"];
+    "Human approves?" -> "Implement via normal workflow (no plan doc)" [label="bounded: yes or already requested"];
     "Hidden complexity? Upgrade path" -> "Classify: spike / bounded / architectural";
     "Explore project context" -> "Ask clarifying questions";
     "Ask clarifying questions" -> "Propose 2-3 approaches";
@@ -149,7 +157,7 @@ digraph brainstorming {
 **Terminal states are path-bound.** Architectural: the ONLY skill you
 invoke after brainstorming is writing-plans — never frontend-design,
 mcp-builder, or any other implementation skill. Bounded: after
-approval, implementation proceeds directly through the normal
+alignment, implementation proceeds directly through the normal
 development workflow; no plan document. Spike: the terminal state is a
 reported recommendation.
 
@@ -223,7 +231,7 @@ After the spec review loop passes, ask the user to review the written spec befor
 
 > "Spec written and committed to `<path>`. Please review it and let me know if you want to make any changes before we start writing out the implementation plan."
 
-Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves.
+Wait for the user's response. If they request changes, make them and re-run the spec review loop. Only proceed once the user approves. Their later review comments on the same spec inherit this approval — handle the delta and don't re-run the whole gate.
 
 **Implementation:**
 

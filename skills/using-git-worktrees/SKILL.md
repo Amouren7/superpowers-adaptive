@@ -1,13 +1,18 @@
 ---
 name: using-git-worktrees
-description: Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback
+description: Use when a change needs an isolated workspace - parallel workstreams, experiments that must not disturb the current checkout, high-risk changes, or keeping the main workspace clean while a plan runs; not for lightweight contained fixes, which go ahead in place
 ---
 
 # Using Git Worktrees
 
+## Flow fit
+
+- **Levels:** C and D — and only when the work actually needs isolation. A (answer/read-only) and B (lightweight fix) do not enter this skill.
+- **Lightweight path:** Skip it. Make the fix in place and report; a contained, reversible change with a known cause does not need a workspace of its own. Skip when there is no parallel workstream, no experiment risk, and no need to keep the main workspace clean.
+- **Non-negotiables:** when you do enter, run Step 0 detection (harness-made isolation and submodules both fool eyeballing) and prefer a native worktree tool when one exists.
 ## Overview
 
-Ensure work happens in an isolated workspace. Prefer your platform's native worktree tools. Fall back to manual git worktrees only when no native tool is available.
+Enter this skill when a change needs an isolated workspace: workstreams that run in parallel, experiments that must not disturb the current checkout, high-risk changes, or a plan that must leave the main workspace clean. It is a tool for those conditions, not a step every change passes through — see Step 0 for the cases that end here.
 
 **Core principle:** Detect existing isolation first. Then use native tools. Then fall back to git. Never fight the harness.
 
@@ -15,7 +20,7 @@ Ensure work happens in an isolated workspace. Prefer your platform's native work
 
 ## Step 0: Detect Existing Isolation
 
-**Before creating anything, check if you are already in an isolated workspace.**
+**Once you have decided an isolated workspace is needed, check whether you already have one before creating anything.**
 
 ```bash
 GIT_DIR=$(cd "$(git rev-parse --git-dir)" 2>/dev/null && pwd -P)
@@ -160,7 +165,8 @@ Ready to implement <feature-name>
 
 | Excuse | Reality |
 |--------|---------|
-| "I'm obviously not in a worktree — no need to check" | Run Step 0. Harness-created isolation and submodules both fool eyeballing; the detection commands settle it. |
+| "Isolation is just what you set up before touching code" | Isolation is for a reason you can name (parallel workstream, risky experiment, a main workspace that must stay clean). A contained reversible fix goes ahead in place. |
+| "I'm obviously not in a worktree — no need to check" | Once you enter, run Step 0. Harness-created isolation and submodules both fool eyeballing; the detection commands settle it. |
 | "`git worktree add` is quicker than hunting for a native tool" | A native tool (e.g. `EnterWorktree`) owns placement, branching, and cleanup. Bypassing it is the #1 mistake — it creates phantom state your harness can't see or manage. |
 | "The worktree directory is surely ignored already" | Run `git check-ignore`. An unignored worktree directory commits the whole tree into the repo. |
 | "Any directory name works" | Explicit instructions beat an existing project-local directory, which beats the `.worktrees/` default. |

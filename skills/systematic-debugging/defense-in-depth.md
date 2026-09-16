@@ -1,10 +1,12 @@
 # Defense-in-Depth Validation
 
+**Optional deep dive.** Load this when the same invalid data can re-enter through other code paths, refactoring, or mocks - not as a required step after every bug fix.
+
 ## Overview
 
 When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.
 
-**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.
+**Core principle:** Validate at every layer the data actually passes through. Make the bug structurally impossible.
 
 ## Why Multiple Layers
 
@@ -113,10 +115,10 @@ Bug: Empty `projectDir` caused `git init` in source code
 
 ## Key Insight
 
-All four layers were necessary. During testing, each layer caught bugs the others missed:
+The layers that pay for themselves depend on the blast radius. In the session above, each of the four caught something the others missed:
 - Different code paths bypassed entry validation
 - Mocks bypassed business logic checks
 - Edge cases on different platforms needed environment guards
 - Debug logging identified structural misuse
 
-**Don't stop at one validation point.** Add checks at every layer.
+**Don't stop at one validation point when the data has several ways in.** Where there is only one entry path and it is covered, one good check is a legitimate answer.

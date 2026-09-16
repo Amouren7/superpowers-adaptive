@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work
+description: Use when work on a branch is complete and the integration decision is actually in front of you - merge, PR, or keep; skip it for level A and for level B fixes that never left the default branch
 ---
 
 # Finishing a Development Branch
@@ -11,11 +11,19 @@ description: Use when implementation is complete, all tests pass, and you need t
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
+## Flow fit
+
+- **Levels / Lightweight path / Skip when:** D runs the full flow; C runs the parts the change needs; A never gets here, and B — one targeted check from the tree you are integrating plus a clear commit/change description — is skipped when the work never left the default branch.
+- **Non-negotiables:** never integrate on failing checks, and never delete a branch or worktree — with or without `--force` — outside the paths this repo owns and the explicit confirmation this skill requires.
+
 ## Step 1: Verify Tests
 
-Run the project's full test suite (`npm test` / `cargo test` / `pytest` / `go test ./...`).
+Verify to the depth the work warrants, from the same tree you are about to integrate:
 
-**If tests fail**, report the failures and stop — the menu comes after a green suite:
+- **Level C — the checks the change touches**, plus a clean build.
+- **Level D — the project's full test suite** (`npm test` / `cargo test` / `pytest` / `go test ./...`), plus whatever the plan named.
+
+**If the checks you ran fail**, report the failures and stop — the menu comes after a passing result:
 
 ```
 Tests failing (<N> failures). Must fix before completing:
@@ -23,7 +31,7 @@ Tests failing (<N> failures). Must fix before completing:
 [Show failures]
 ```
 
-**If tests pass:** continue to Step 2.
+**If they pass:** continue to Step 2.
 
 ## Step 2: Detect Environment
 
@@ -95,15 +103,15 @@ git checkout <base-branch>
 git pull
 git merge <feature-branch>
 
-# Verify tests on merged result
+# Verify the merged result matches the change's reach
 <test command>
 ```
 
-If tests fail on the merged result: stop, leave the worktree and branch in
+If checks fail on the merged result: stop, leave the worktree and branch in
 place, and investigate — nothing has been pushed, so the merge is local
 and recoverable.
 
-Once the merged result is green: clean up the worktree (Step 6), then
+Once the merged result passes: clean up the worktree (Step 6), then
 delete the branch:
 
 ```bash
@@ -213,7 +221,7 @@ place. If your platform provides a workspace-exit tool, use it.
 
 | Excuse | Reality |
 |--------|---------|
-| "Tests passed earlier this session" | Run the suite on the tree you are about to integrate. A green run only proves the tree it ran on. |
+| "Tests passed earlier this session" | The tree you integrate is the tree that must pass. |
 | "They obviously want it merged" | Integration is your human partner's decision. Present the menu and wait. |
 | "They seem done with this feature — I'll offer to discard it" | The menu is complete as written. Discard happens only when your human partner asks for it in so many words. |
 | "'Yeah, get rid of it' counts as confirmation" | Only the typed word `discard` authorizes deletion. |

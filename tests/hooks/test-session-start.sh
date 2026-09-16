@@ -166,10 +166,10 @@ fi
 
 claude_home="$(make_home claude-code)"
 assert_command_output \
-    "Claude Code emits nested SessionStart additionalContext" \
+    "Claude Code emits nested SessionStart additionalContext with the adaptive entry" \
     "nested" \
-    "" \
-    "" \
+    "Classify this task first" \
+    "You have superpowers"$'\037'"EXTREMELY_IMPORTANT"$'\037'"ABSOLUTELY MUST" \
     "$claude_home" \
     CLAUDE_PLUGIN_ROOT="$REPO_ROOT" \
     bash "$HOOK_UNDER_TEST"

@@ -4,6 +4,8 @@
 
 LLMs respond to the same persuasion principles as humans. Understanding this psychology helps you design more effective skills - not to manipulate, but to ensure critical practices are followed even under pressure.
 
+**Scope:** these techniques are for content that has to hold under pressure — discipline rules, safety requirements, anti-rationalization counters. Persuasion framing applied to procedures that change no behavior (mandatory announcements, confirmations, ceremony) just makes the burden louder; delete it instead, per the Flow fit and Deleting Process Burden sections of SKILL.md.
+
 **Research foundation:** Meincke et al. (2025) tested 7 persuasion principles with N=28,000 AI conversations. Persuasion techniques more than doubled compliance rates (33% → 72%, p < .001).
 
 ## The Seven Principles
@@ -31,9 +33,9 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 **What it is:** Consistency with prior actions, statements, or public declarations.
 
 **How it works in skills:**
-- Require announcements: "Announce skill usage"
+- Announce the process choice when it isn't obvious to your human partner
 - Force explicit choices: "Choose A, B, or C"
-- Use tracking: todos for checklists
+- Use tracking: todos where a step would genuinely get dropped without them
 
 **When to use:**
 - Ensuring skills are actually followed
@@ -42,8 +44,8 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 
 **Example:**
 ```markdown
-✅ When you find a skill, you MUST announce: "I'm using [Skill Name]"
-❌ Consider letting your partner know which skill you're using.
+✅ When the process choice is not self-evident: "Using [Skill Name] to [purpose]."
+❌ A mandatory announcement on every response, including ones that only ask a clarifying question.
 ```
 
 ### 3. Scarcity
@@ -61,8 +63,8 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 
 **Example:**
 ```markdown
-✅ After completing a task, IMMEDIATELY request code review before proceeding.
-❌ You can review code when convenient.
+✅ For irreversible or high-risk changes, request review before proceeding.
+❌ A mandatory review step on every change, whatever its risk.
 ```
 
 ### 4. Social Proof
@@ -80,7 +82,7 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 
 **Example:**
 ```markdown
-✅ Checklists without todo tracking = steps get skipped. Every time.
+✅ Steps that nobody is tracking get skipped. Every time.
 ❌ Some people find a todo list helpful for checklists.
 ```
 
@@ -138,6 +140,8 @@ LLMs respond to the same persuasion principles as humans. Understanding this psy
 - "YOU MUST" removes decision fatigue
 - Absolute language eliminates "is this an exception?" questions
 - Explicit anti-rationalization counters close specific loopholes
+
+**Where this applies:** bright lines earn their cost on genuine discipline boundaries — the agent has a reason to bend the rule and the consequence is real. On ordinary process steps, absolute language mostly produces compliance theater: the step gets performed, nothing changes, and the tokens are spent. Check whether the rule changes behavior before reaching for authority framing (see Match the Form to the Failure in SKILL.md).
 
 **Implementation intentions create automatic behavior:**
 - Clear triggers + required actions = automatic execution

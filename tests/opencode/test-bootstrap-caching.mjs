@@ -83,13 +83,13 @@ function makeOutput(text) {
 
 function countBootstrapParts(output) {
   return output.messages[0].parts.filter(
-    (part) => part.type === 'text' && part.text.includes('EXTREMELY_IMPORTANT')
+    (part) => part.type === 'text' && part.text.includes('<SUPERPOWERS>')
   ).length;
 }
 
 function bootstrapText(output) {
   return output.messages[0].parts.find(
-    (part) => part.type === 'text' && part.text.includes('EXTREMELY_IMPORTANT')
+    (part) => part.type === 'text' && part.text.includes('<SUPERPOWERS>')
   )?.text || '';
 }
 

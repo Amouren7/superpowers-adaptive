@@ -1,23 +1,49 @@
 ---
 name: writing-skills
-description: Use when creating new skills, editing existing skills, or verifying skills work before deployment
+description: Use when creating or editing a skill, or when a skill's behavior needs verification - load it when skill content, structure, or discoverability is what you are changing
 ---
 
 # Writing Skills
 
 ## Overview
 
-**Writing skills IS Test-Driven Development applied to process documentation.**
+**Writing skills is Test-Driven Development applied to process documentation — run at the depth the change warrants.**
 
 **Personal skills live in your runtime's skills directory** (`~/.claude/skills/` on Claude Code) — see [codex-tools.md](../using-superpowers/references/codex-tools.md) or [gemini-tools.md](../using-superpowers/references/gemini-tools.md) for the path on those runtimes. Codex, Copilot CLI, and Gemini CLI all also recognize `~/.agents/skills/` as a cross-runtime alias.
 
-You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes).
+You write test cases (pressure scenarios with subagents), watch them fail (baseline behavior), write the skill (documentation), watch tests pass (agents comply), and refactor (close loopholes) — **when the change can shape behavior**. Not every edit is a campaign. A wording fix, a stale path, a deleted paragraph, or a reference reorg earns a targeted behavioral check; content that governs what an agent does under pressure earns the full cycle. Scale the process to the risk, the same way `superpowers:using-superpowers` scales task levels.
 
-**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
+**Core principle for behavior-shaping content:** If you didn't watch an agent fail without the skill, you don't know if the skill teaches the right thing.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill adapts TDD to documentation.
+**Deleting burden is legitimate.** Removing a requirement that does not change agent behavior is a valid and valuable edit — see [Deleting Process Burden](#deleting-process-burden). The one thing that never gets dropped is verification of the behavior the skill is actually responsible for.
+
+**Background, on demand:** read superpowers:test-driven-development when you need the RED-GREEN-REFACTOR cycle in detail; this skill adapts that cycle to documentation.
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
+
+## Flow fit
+
+- **Levels:** classify the edit with `superpowers:using-superpowers` — A (typo, format, link) owes no behavioral claim; B gets one targeted before/after comparison; C/D, behavior-shaping, safety-relevant, or unpredictable edits get RED-GREEN-REFACTOR.
+- **Lightweight path:** for a change that cannot alter behavior — confirm nothing references what you touched, run one baseline plus one post-change check, record input and output, ship.
+- **Skip when:** you are only fixing typos, formatting, links, or deleting an unused section. No behavioral claim is being made, so no behavioral test is owed.
+- **Non-negotiables:** never claim a behavioral effect you did not observe; never delete tests, weaken assertions, or swallow failures to manufacture green; authorization and risk controls do not shrink with the level.
+
+## Deleting Process Burden
+
+Skills are tools loaded on demand. Every line competes for context and attention, and a rule that does not change what an agent does is pure cost.
+
+**Deleting a requirement that does not change behavior is a legitimate and valuable edit** — as valuable as adding one that does. Authors are expected to cut, not just accumulate.
+
+**Delete these:**
+- Long templates and boilerplate sections that get skimmed or skipped
+- Repeated confirmations of something the request, the code, or an earlier section already answers
+- Ceremonial steps kept "for completeness" — a checklist item, a mandatory announcement, a per-item todo, a fixed sequence nobody deviates from
+- Decorative wording, restated principles, and hedges that do not alter a decision
+- Assertions about procedure that no observed agent behavior depends on
+
+**The test for keeping a line:** does it change what an agent actually does — a choice, an ordering, a stop condition, an output shape? If you cannot name the behavior it changes, it is a candidate for deletion.
+
+**The floor:** deletion still has to preserve behavior verification for whatever the skill is responsible for, plus the risk controls and authorization boundaries that apply. Deleting a test, weakening an assertion, or removing a safety rule to make a change look clean is not burden reduction — that is green-washing. If you are unsure whether behavior depends on a line, run one comparison instead of arguing about it.
 
 ## What is a Skill?
 
@@ -42,7 +68,7 @@ A **skill** is a reference guide for proven techniques, patterns, or tools. Skil
 | **Watch it pass** | Verify agent now complies |
 | **Refactor cycle** | Find new rationalizations → plug → re-verify |
 
-The entire skill creation process follows RED-GREEN-REFACTOR.
+The mapping applies to the part of a skill that shapes behavior. Reference content, formatting, and deletions with no behavioral claim do not map onto a test at all — there is nothing for RED to fail.
 
 ## When to Create a Skill
 
@@ -206,9 +232,13 @@ Use words an agent would search for:
 
 ### 3. Descriptive Naming
 
-**Use active voice, verb-first:**
+**Use active voice, verb-first, and name by what you DO or by the core insight:**
 - ✅ `creating-skills` not `skill-creation`
 - ✅ `condition-based-waiting` not `async-test-helpers`
+- ✅ `flatten-with-flags` > `data-structure-refactoring`
+- ✅ `root-cause-tracing` > `debugging-techniques`
+
+**Gerunds (-ing) work well for processes:** `creating-skills`, `testing-skills`, `debugging-with-logs` — active, describes the action you're taking.
 
 ### 4. Token Efficiency (Critical)
 
@@ -237,7 +267,7 @@ When searching, dispatch subagent with template...
 [20 lines of repeated instructions]
 
 # ✅ GOOD: Reference other skill
-Always use subagents (50-100x context savings). REQUIRED: Use [other-skill-name] for workflow.
+Use subagents where they save context (50-100x) and the work is independent. Use [other-skill-name] when its workflow applies.
 ```
 
 **Compress examples:**
@@ -265,25 +295,19 @@ wc -w skills/path/SKILL.md
 # Other frequently-loaded: aim for <200 total
 ```
 
-**Name by what you DO or core insight:**
-- ✅ `condition-based-waiting` > `async-test-helpers`
-- ✅ `using-skills` not `skill-usage`
-- ✅ `flatten-with-flags` > `data-structure-refactoring`
-- ✅ `root-cause-tracing` > `debugging-techniques`
-
-**Gerunds (-ing) work well for processes:**
-- `creating-skills`, `testing-skills`, `debugging-with-logs`
-- Active, describes the action you're taking
-
 ### 5. Cross-Referencing Other Skills
 
 **When writing documentation that references other skills:**
 
-Use skill name only, with explicit requirement markers:
-- ✅ Good: `**REQUIRED SUB-SKILL:** Use superpowers:test-driven-development`
-- ✅ Good: `**REQUIRED BACKGROUND:** You MUST understand superpowers:systematic-debugging`
-- ❌ Bad: `See skills/testing/test-driven-development` (unclear if required)
+Name the skill and say **when** it applies, so the reader can decide whether to load it:
+- ✅ Good: `Use superpowers:test-driven-development when the cycle is not already familiar`
+- ✅ Good: `Use superpowers:systematic-debugging when the cause is still unknown`
+- ✅ Good: `superpowers:test-driven-development defines the RED-GREEN-REFACTOR cycle this skill adapts`
+- ❌ Bad: `**REQUIRED SUB-SKILL:** Use superpowers:systematic-debugging` (an unconditional marker makes an on-demand tool a gate)
+- ❌ Bad: `See skills/testing/test-driven-development` (unclear whether, or when, to load it)
 - ❌ Bad: `@skills/testing/test-driven-development/SKILL.md` (force-loads, burns context)
+
+Reserve unconditional "REQUIRED" markers for dependencies that genuinely apply every time. A marker that fires on every task turns an on-demand tool back into a gate.
 
 **Why no @ links:** `@` syntax force-loads files immediately, consuming 200k+ context before you need them.
 
@@ -371,30 +395,32 @@ pptx/
 ```
 When: Reference material too large for inline
 
-## The Iron Law (Same as TDD)
+## The Iron Law, Scaled
 
 ```
-NO SKILL WITHOUT A FAILING TEST FIRST
+NO BEHAVIOR-SHAPING CHANGE WITHOUT BEHAVIORAL EVIDENCE
 ```
 
-This applies to NEW skills AND EDITS to existing skills.
+The law is about the *claim*, not the file. Before you edit, ask what this change can make an agent do differently. That answer sets the evidence owed:
 
-Write skill before testing? Delete it. Start over.
-Edit skill without testing? Same violation.
+| Change | Evidence owed |
+|---|---|
+| Typo, formatting, path or link fix, or deleting a section nothing depends on | None beyond confirming nothing references what you touched. No behavioral claim is being made. |
+| Wording correction where the intended behavior is already clear | One comparison: same input against the old and new text, then read both outputs. |
+| Behavior-shaping content (rules, prohibitions, recipes, red flags, rationalization counters) | Baseline scenario first, then the same scenario with the change, plus a no-guidance control. |
+| Safety-relevant, discipline-enforcing, or an edit whose effect you cannot predict | Full RED-GREEN-REFACTOR with pressure scenarios and repetition. |
 
-**No exceptions:**
-- Not for "simple additions"
-- Not for "just adding a section"
-- Not for "documentation updates"
-- Don't keep untested changes as "reference"
-- Don't "adapt" while running tests
-- Delete means delete
+Writing guidance before watching the failure means you are guessing at what needs preventing. Delete the guess and start from the baseline — for the rows where behavior is what changes.
 
-**REQUIRED BACKGROUND:** The superpowers:test-driven-development skill explains why this matters. Same principles apply to documentation.
+**Same rule for edits as for new skills.** An edit that changes behavior is a new claim about behavior. An edit that does not change behavior owes no behavioral test at all.
+
+**Background, on demand:** The superpowers:test-driven-development skill explains why the failing test comes first; read it when you need that reasoning in full.
 
 ## Testing All Skill Types
 
-Different skill types need different test approaches:
+Different skill types need different test approaches — and different depths. The lists below describe a full run for behavior-shaping content; a one-line correction inside any of these types needs only the single comparison from The Iron Law, Scaled.
+
+For every type the same floor applies: you can say what a fresh agent did before the change and what it did after, with the inputs recorded.
 
 ### Discipline-Enforcing Skills (rules/requirements)
 
@@ -441,20 +467,21 @@ Different skill types need different test approaches:
 
 **Success criteria:** Agent finds and correctly applies reference information
 
-## Common Rationalizations for Skipping Testing
+## Rationalizations, Sorted
 
-| Excuse | Reality |
+Some of these excuses are real mistakes. Others are correct calls on low-risk edits that the old framing treated as violations. Sort them by **whether the change can alter behavior**:
+
+| Excuse | Verdict |
 |--------|---------|
-| "Skill is obviously clear" | Clear to you ≠ clear to other agents. Test it. |
-| "It's just a reference" | References can have gaps, unclear sections. Test retrieval. |
-| "Testing is overkill" | Untested skills have issues. Always. 15 min testing saves hours. |
-| "I'll test if problems emerge" | Problems = agents can't use skill. Test BEFORE deploying. |
-| "Too tedious to test" | Testing is less tedious than debugging bad skill in production. |
-| "I'm confident it's good" | Overconfidence guarantees issues. Test anyway. |
-| "Academic review is enough" | Reading ≠ using. Test application scenarios. |
-| "No time to test" | Deploying untested skill wastes more time fixing it later. |
+| "It's only a typo / a dead link / a deleted unused section" | **Legitimate for A/B edits.** No behavioral claim, no behavioral test. Confirm nothing references what you removed. |
+| "It's just a reference" | **Half legitimate.** Reference edits still get a retrieval check — can a fresh agent find and apply the right section? |
+| "I'm confident it's good" | **Not legitimate for behavior-shaping content.** Confidence is not observation. Run the comparison. |
+| "Testing is overkill" | **Depends on the change.** True for formatting; false for a rule an agent will rationalize away under pressure. |
+| "I'll test if problems emerge" | **Not legitimate for C/D.** Problems surface as agents doing the wrong thing, which is exactly what the test prevents. |
+| "Reading it over is enough" | **Only when no behavior is claimed.** Reading ≠ using; a text review cannot stand in for watching an agent act. |
+| "No time to test" | **Escalate to your human partner rather than silently skipping.** Say what you did not verify and why. |
 
-**All of these mean: Test before deploying. No exceptions.**
+**Deleting or deferring a requirement is a violation only when behavior depended on it.** Say which behavior, or say you checked and found none.
 
 ## Match the Form to the Failure
 
@@ -478,6 +505,8 @@ Before writing guidance, classify the baseline failure. The form that bulletproo
 Skills that enforce discipline (like TDD) need to resist rationalization. Agents are smart and will find loopholes when under pressure.
 
 **Scope:** this toolkit is for discipline failures — an agent that knows the rule and skips it under pressure. For wrong-shaped output or omitted elements, prohibition-based bulletproofing backfires; use the forms in Match the Form to the Failure instead.
+
+**Risk scope:** red flags and rationalization tables are worth their length only where an agent has an incentive to talk itself out of the rule. A typo fix, a clarity edit, or a reference update adds none of this machinery — one comparison settles it. Adding a red flags list to content nobody resists is exactly the decorative burden Deleting Process Burden tells you to cut.
 
 **Psychology note:** Understanding WHY persuasion techniques work helps you apply them systematically. See persuasion-principles.md for research foundation (Cialdini, 2021; Meincke et al., 2025) on authority, commitment, scarcity, social proof, and unity principles.
 
@@ -551,7 +580,20 @@ description: use when implementing any feature or bugfix, before writing impleme
 
 ## RED-GREEN-REFACTOR for Skills
 
-Follow the TDD cycle:
+Run this cycle for behavior-shaping changes, at the depth the change warrants (see the table in The Iron Law, Scaled). Start from failure, not from success: the scenario you build is the one where an agent does the wrong thing.
+
+### Minimal verification recipe
+
+The floor for any change that claims a behavioral effect — one baseline, one comparison, recorded evidence:
+
+1. **Failure scenario first (RED).** Give a fresh-context subagent the realistic task the skill is meant to influence, running the **no-guidance control** (no skill, or the old text). Record what it actually does — the choice it makes and the rationalization in its own words. If the control already behaves correctly, there is nothing to fix: stop, and don't author the guidance.
+2. **Counter-example check.** Name the case where the opposite would be wrong, and confirm the new wording does not push the agent into it. Guidance that fixes the failure by over-correcting has traded one defect for another.
+3. **Apply the change (GREEN).** Run the *same* input against the new text. Same task, same pressures, same framing — otherwise you compared two different experiments.
+4. **Record the pair.** Input, both outputs, and the specific difference. "It seemed clearer" is not a record.
+
+### Text checks are not behavior verification
+
+Reading the skill and agreeing with it, passing a link or lint check, `wc -w` on the file, and a model reciting the rule back to you all measure the **text**, not the behavior. They are cheap and worth running. They do not substitute for steps 1–4 whenever a behavioral claim is being made. A perfectly worded rule that agents still talk themselves out of has failed its test.
 
 ### RED: Write Failing Test (Baseline)
 
@@ -570,7 +612,9 @@ Run same scenarios WITH skill. Agent should now comply.
 
 ### REFACTOR: Close Loopholes
 
-Agent found new rationalization? Add explicit counter. Re-test until bulletproof.
+Agent found new rationalization? Add explicit counter. Re-test.
+
+Continue the loop while new rationalizations keep appearing — that is required for discipline-enforcing content. A wording correction that already converged after one comparison is done; there is no benefit in manufacturing more rounds.
 
 ### Micro-Test Wording Before Full Scenarios
 
@@ -582,7 +626,7 @@ Full pressure-scenario runs are the final gate, but they are slow and expensive 
 4. **Manually read every flagged match.** Score programmatically if you like, but template echoes and quoted counter-examples masquerade as hits; automated counts alone overstate both failure and success.
 5. **Variance is a metric.** When guidance lands, reps converge on the same shape. Five different interpretations across five reps means the wording isn't binding — tighten the form before adding words.
 
-Micro-tests verify wording; they do not replace pressure scenarios for discipline skills.
+Micro-tests verify wording; they do not replace pressure scenarios for discipline skills. For a low-risk wording correction, one micro-test comparison **is** the evidence the Iron Law table asks for — you do not need the pressure matrix on top of it.
 
 **Testing methodology:** See [testing-skills-with-subagents.md](testing-skills-with-subagents.md) for the complete testing methodology:
 - How to write pressure scenarios
@@ -611,55 +655,47 @@ step2 [label="read file"];
 helper1, helper2, step3, pattern4
 **Why bad:** Labels should have semantic meaning
 
-## STOP: Before Moving to Next Skill
+## Sequencing the Work
 
-**After writing ANY skill, you MUST STOP and complete the deployment process.**
+**One behavior-shaping change at a time.** If two edits could each change behavior, verify them separately — otherwise a failure points at two possible causes and you learn nothing.
 
-**Do NOT:**
-- Create multiple skills in batch without testing each
-- Move to next skill before current one is verified
-- Skip testing because "batching is more efficient"
+- Don't stack behavior-shaping edits onto an unverified change
+- Don't start the next one before the current claim is settled
 
-**The deployment checklist below is MANDATORY for EACH skill.**
+**Batching is fine where no behavioral claim is made.** Typos, formatting, link fixes, and deletions of unused content can go in one pass; there is nothing to attribute a failure to.
 
-Deploying untested skills = deploying untested code. It's a violation of quality standards.
+Deploying behavior-shaping content you never watched an agent use = deploying untested code.
 
-## Skill Creation Checklist (TDD Adapted)
+## Skill Authoring Checklist (Scaled)
 
-**IMPORTANT: Create a todo for EACH checklist item below.**
+Apply the rows that match the change. A checklist row that cannot change an outcome is decoration — delete it, or say why it is there. Track the rows with todos only when the tracking itself helps; there is no standing requirement to create a todo per item.
 
-**RED Phase - Write Failing Test:**
-- [ ] Create pressure scenarios (3+ combined pressures for discipline skills)
-- [ ] Run scenarios WITHOUT skill - document baseline behavior verbatim
-- [ ] Identify patterns in rationalizations/failures
-
-**GREEN Phase - Write Minimal Skill:**
+**Always — any skill edit:**
 - [ ] Name uses only letters, numbers, hyphens (no parentheses/special chars)
 - [ ] YAML frontmatter with required `name` and `description` fields (max 1024 chars; see [spec](https://agentskills.io/specification))
-- [ ] Description starts with "Use when..." and includes specific triggers/symptoms
+- [ ] Description starts with "Use when..." and states triggering conditions/symptoms, not the workflow
 - [ ] Description written in third person
 - [ ] Keywords throughout for search (errors, symptoms, tools)
-- [ ] Clear overview with core principle
-- [ ] Address specific baseline failures identified in RED
+- [ ] Supporting files only for tools or heavy reference
+- [ ] Nothing referenced by the section you removed or renamed is now dangling
+
+**When the change can shape behavior (C/D):**
+- [ ] RED: create the failing scenario, run it WITHOUT the skill, document baseline behavior verbatim
+- [ ] Identify the pattern in the failures — which rationalizations recur?
+- [ ] Check the counter-example: does the new wording over-correct into a new failure?
+- [ ] Address those specific baseline failures, and nothing hypothetical
 - [ ] Guidance form matches the failure type (see Match the Form to the Failure)
-- [ ] For behavior-shaping guidance: wording micro-tested against a no-guidance control (5+ reps, every flagged match read manually) — N/A for pure reference skills
-- [ ] Code inline OR link to separate file
-- [ ] One excellent example (not multi-language)
-- [ ] Run scenarios WITH skill - verify agents now comply
+- [ ] Micro-test the wording against a no-guidance control (5+ reps; read every flagged match manually)
+- [ ] GREEN: run the same scenarios WITH the skill; agents now comply
+- [ ] REFACTOR: add explicit counters for NEW rationalizations; update the rationalization table and red flags
+- [ ] Re-test after each counter; stop when no new rationalization appears
 
-**REFACTOR Phase - Close Loopholes:**
-- [ ] Identify NEW rationalizations from testing
-- [ ] Add explicit counters (if discipline skill)
-- [ ] Build rationalization table from all test iterations
-- [ ] Create red flags list
-- [ ] Re-test until bulletproof
-
-**Quality Checks:**
-- [ ] Small flowchart only if decision non-obvious
+**Presentation — only where it helps a reader:**
+- [ ] Small flowchart, only if the decision is non-obvious
 - [ ] Quick reference table
 - [ ] Common mistakes section
 - [ ] No narrative storytelling
-- [ ] Supporting files only for tools or heavy reference
+- [ ] One excellent example (not multi-language)
 
 **Deployment:**
 - [ ] Commit skill to git and push to your fork (if configured)

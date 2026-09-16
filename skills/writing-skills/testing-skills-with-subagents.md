@@ -1,16 +1,16 @@
 # Testing Skills With Subagents
 
-**Load this reference when:** creating or editing skills, before deployment, to verify they work under pressure and resist rationalization.
+**Load this reference when:** you are changing content that has to hold up under pressure — rules, prohibitions, recipes, rationalization counters — and you need the full test format. For a typo or a wording fix that makes no behavioral claim, the minimal verification recipe in SKILL.md is the whole check; do not open this file.
 
 ## Overview
 
-**Testing skills is just TDD applied to process documentation.**
+**Testing behavior-shaping skills is TDD applied to process documentation.**
 
-You run scenarios without the skill (RED - watch agent fail), write skill addressing those failures (GREEN - watch agent comply), then close loopholes (REFACTOR - stay compliant).
+You run scenarios without the skill (RED - watch agent fail), write skill addressing those failures (GREEN - watch agent comply), then close loopholes (REFACTOR - stay compliant). This is the full cycle; a change that cannot alter behavior does not owe it, and a small wording correction owes only one before/after comparison.
 
-**Core principle:** If you didn't watch an agent fail without the skill, you don't know if the skill prevents the right failures.
+**Core principle for behavior-shaping content:** If you didn't watch an agent fail without the skill, you don't know if the skill prevents the right failures.
 
-**REQUIRED BACKGROUND:** You MUST understand superpowers:test-driven-development before using this skill. That skill defines the fundamental RED-GREEN-REFACTOR cycle. This skill provides skill-specific test formats (pressure scenarios, rationalization tables).
+**Background, on demand:** superpowers:test-driven-development defines the RED-GREEN-REFACTOR cycle; read it when you need that reasoning in full. This reference supplies the skill-specific test formats (pressure scenarios, rationalization tables) when the cycle is what the change needs.
 
 **Complete worked example:** See examples/CLAUDE_MD_TESTING.md for a full test campaign testing CLAUDE.md documentation variants.
 
@@ -26,6 +26,10 @@ Don't test:
 - Pure reference skills (API docs, syntax guides)
 - Skills without rules to violate
 - Skills agents have no incentive to bypass
+
+**Scale to the change, not to the file.** A typo fix or a deleted unused section inside a discipline skill still needs no campaign, because it cannot alter what the agent does. A one-word change to a prohibition (`prefer` → `never`) can flip behavior and earns a full run. Classify by behavioral risk, not by which file you touched.
+
+**Minimal path (small wording change):** one realistic task run against the old text → the same task against the new text → record both outputs. Skip the pressure matrix, the multi-rep loop, and the meta-test. That comparison is the evidence; adding rounds to it buys nothing.
 
 ## TDD Mapping for Skill Testing
 
@@ -48,11 +52,13 @@ This is identical to TDD's "write failing test first" - you MUST see what agents
 
 **Process:**
 
-- [ ] **Create pressure scenarios** (3+ combined pressures)
+- [ ] **Create pressure scenarios** (3+ combined pressures for discipline content; a single realistic pressure is enough for technique, pattern, or reference guidance)
 - [ ] **Run WITHOUT skill** - give agents realistic task with pressures
 - [ ] **Document choices and rationalizations** word-for-word
 - [ ] **Identify patterns** - which excuses appear repeatedly?
 - [ ] **Note effective pressures** - which scenarios trigger violations?
+
+A text review of the skill is not part of this phase. Until an agent has been observed choosing, there is no RED to verify — reading the draft and agreeing with it measures the text, not the behavior.
 
 **Example:**
 
@@ -305,9 +311,9 @@ Meta-test: "Skill was clear, I should follow it"
 
 **Bulletproof achieved.**
 
-## Testing Checklist (TDD for Skills)
+## Testing Checklist (for behavior-shaping changes)
 
-Before deploying skill, verify you followed RED-GREEN-REFACTOR:
+Run this when the change can shape behavior. A row that cannot change an outcome for your specific change can be dropped — say which and why. For a small wording correction, the Minimal path above replaces this list.
 
 **RED Phase:**
 - [ ] Created pressure scenarios (3+ combined pressures)
@@ -341,7 +347,7 @@ Running only academic tests, not real pressure scenarios.
 
 **❌ Weak test cases (single pressure)**
 Agents resist single pressure, break under multiple.
-✅ Fix: Combine 3+ pressures (time + sunk cost + exhaustion).
+✅ Fix: For discipline content, combine 3+ pressures (time + sunk cost + exhaustion). For technique or reference guidance, one realistic scenario is the right size.
 
 **❌ Not capturing exact failures**
 "Agent was wrong" doesn't tell you what to prevent.
@@ -352,8 +358,8 @@ Agents resist single pressure, break under multiple.
 ✅ Fix: Add explicit negations for each specific rationalization.
 
 **❌ Stopping after first pass**
-Tests pass once ≠ bulletproof.
-✅ Fix: Continue REFACTOR cycle until no new rationalizations.
+For discipline-enforcing content, tests pass once ≠ bulletproof.
+✅ Fix: Continue the REFACTOR cycle until no new rationalizations appear — for that content. A wording correction that converged on the first comparison is finished; more rounds change nothing.
 
 ## Quick Reference (TDD Cycle)
 
@@ -368,11 +374,11 @@ Tests pass once ≠ bulletproof.
 
 ## The Bottom Line
 
-**Skill creation IS TDD. Same principles, same cycle, same benefits.**
+**Behavior-shaping skill creation IS TDD. Same principles, same cycle, same benefits.**
 
-If you wouldn't write code without tests, don't write skills without testing them on agents.
+If you wouldn't ship behavior-changing code without testing it, don't ship behavior-shaping guidance without watching an agent use it. A change that cannot alter behavior owes no campaign — and earns no behavioral claim either.
 
-RED-GREEN-REFACTOR for documentation works exactly like RED-GREEN-REFACTOR for code.
+RED-GREEN-REFACTOR for documentation works like RED-GREEN-REFACTOR for code; how much of the cycle you run is set by what the change can affect, not by the fact that a skill file was edited.
 
 ## Real-World Impact
 

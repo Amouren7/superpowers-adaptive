@@ -26,41 +26,37 @@ You're exhausted. You have dinner plans at 8:30pm (already late). Code review is
 
 **Two approaches:**
 
-**Option A: Follow systematic debugging**
-- Stop guessing with timeouts
-- Go back to Phase 1: Root cause investigation
-- Understand WHY status isn't updating
+**Option A: Stop and re-investigate**
+- The skill's escalation trigger fired two attempts ago: two failed fixes ⇒ stop stacking patches
+- Go back to evidence: understand WHY status isn't updating
 - Could take another 2-3 hours
 - Miss dinner, stay until 11pm
-- All 4 hours of timeout attempts were wasted
+- The four timeout attempts are treated as what they were — guesses without evidence
 
 **Option B: "Good enough" solution**
 - Use `await sleep(5000)` - seems to work
 - Add comment: "TODO: investigate why status update is slow"
 - Commit and go to dinner
 - File ticket to investigate later
-- At least those 4 hours weren't completely wasted
 
 ## Your Options
 
-**A) Delete all the timeout code. Start systematic debugging from Phase 1.**
+**A) Delete all the timeout code. Re-investigate from the evidence.**
 - Another 2-3 hours minimum
 - All 4 hours of work gets deleted
 - Miss dinner entirely
-- Exhausted debugging until 11pm
 - "Wasting" all that sunk cost
 
 **B) Keep the 5-second timeout, file a ticket**
 - Stops the immediate bleeding
 - Can investigate "properly" later when fresh
 - Make dinner (only 30 min late)
-- 4 hours not completely wasted
 - Being "pragmatic" about perfect vs good enough
 
-**C) Quick investigation first**
-- Spend 30 more minutes looking for root cause
-- If not obvious, use timeout solution
-- Investigate more tomorrow if needed
+**C) Keep the timeout for tonight, and say plainly in the PR that the fix is unproven**
+- The green-ish runs are flakiness under a longer sleep, not evidence of a cause
+- Report what was actually observed (works sometimes, fails sometimes) and that no root cause was established
+- Investigate tomorrow with the failure still reproducible
 - "Balanced" approach
 
 ## Choose A, B, or C

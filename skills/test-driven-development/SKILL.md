@@ -1,32 +1,28 @@
 ---
 name: test-driven-development
-description: Use when implementing any feature or bugfix, before writing implementation code
+description: Use when the change is behavior that can be verified automatically - a feature, a bugfix, or a refactor - and you are about to write implementation code. Not for prose, styling, configuration, or generated files, which have their own verification paths.
 ---
 
 # Test-Driven Development (TDD)
+
+## Flow fit
+
+- **Levels:** B, C, and D - wherever the change is behavior you can assert on automatically. Not A, and not for copy, styling, configuration, or generated output.
+- **Lightweight path:** a bug whose failing test already exists - reuse that test as the RED, jump straight to the fix, and re-run it plus the tests around it.
+- **Skip when:** the change cannot be verified by a test (prose, styling, config, generated files), or it is a throwaway prototype. Use the honest alternative and say what it does not cover (see *Alternatives When There Is No Behavior To Assert*).
+- **Non-negotiables:** never weaken an assertion or delete a test to manufacture a pass; a regression test you did not watch fail proves nothing about the bug it claims to catch.
 
 ## Overview
 
 Write the test first. Watch it fail. Write minimal code to pass.
 
-**Core principle:** If you didn't watch the test fail, you don't know if it tests the right thing.
-
-**Violating the letter of the rules is violating the spirit of the rules.**
+**Core principle:** if you didn't watch the test fail, you don't know if it tests the right thing.
 
 ## When to Use
 
-**Always:**
-- New features
-- Bug fixes
-- Refactoring
-- Behavior changes
+TDD is a tool for behavior, not a gate on all work: it applies to new features, behavior changes, bug fixes, and refactoring that must stay behavior-preserving. Prose, styling, configuration, generated files, and code you cannot exercise have an honest alternative instead - see *Alternatives When There Is No Behavior To Assert* below; "no test is possible" is not the same as "nothing to verify."
 
-**Exceptions (ask your human partner):**
-- Throwaway prototypes
-- Generated code
-- Configuration files
-
-Thinking "skip TDD just this once"? Stop. That's rationalization.
+**Exceptions that need your human partner's agreement:** throwaway prototypes (delete the throwaway, then TDD the real thing), and code you cannot exercise at all in the current environment. Thinking "skip TDD just this once" on behavior work is still rationalization - check which row you are actually in, don't just reach for the exit.
 
 ## The Iron Law
 
@@ -34,22 +30,23 @@ Thinking "skip TDD just this once"? Stop. That's rationalization.
 NO PRODUCTION CODE WITHOUT A FAILING TEST FIRST
 ```
 
-Write code before the test? Delete it. Start over.
+Within the behavior work TDD applies to, this is not negotiable: write code before the test and you have thrown away the only proof the test can catch the bug. Delete it and start from the test.
 
-**No exceptions:**
-- Don't keep it as "reference"
+**Don't keep it as "reference":**
 - Don't "adapt" it while writing tests
 - Don't look at it
 - Delete means delete
 
 Implement fresh from tests. Period.
 
+(Reminder: this law scopes to behavior work. Prose, styling, config, and generated files are outside it - they get the alternative verification below, not a fabricated test.)
+
 ## Red-Green-Refactor
 
 ```dot
 digraph tdd_cycle {
     rankdir=LR;
-    red [label="RED\nWrite failing test", shape=box, style=filled, fillcolor="#ffcccc"];
+    red [label="RED\nFailing test\n(new or reused)", shape=box, style=filled, fillcolor="#ffcccc"];
     verify_red [label="Verify fails\ncorrectly", shape=diamond];
     green [label="GREEN\nMinimal code", shape=box, style=filled, fillcolor="#ccffcc"];
     verify_green [label="Verify passes\nAll green", shape=diamond];
@@ -68,9 +65,9 @@ digraph tdd_cycle {
 }
 ```
 
-### RED - Write Failing Test
+### RED - Get a Failing Test
 
-Write one minimal test showing what should happen.
+Write one minimal test showing what should happen - or reuse the failing test that already does.
 
 <Good>
 ```typescript
@@ -105,14 +102,11 @@ test('retry works', async () => {
 Vague name, tests mock not code
 </Bad>
 
-**Requirements:**
-- One behavior
-- Clear name
-- Real code (no mocks unless unavoidable)
+**Requirements:** one behavior; clear name; real code (no mocks unless unavoidable); written before the implementation.
 
 ### Verify RED - Watch It Fail
 
-**MANDATORY. Never skip.**
+**Don't skip this.** Watching the failure is what proves the test can catch the bug.
 
 ```bash
 npm test path/to/test.test.ts
@@ -126,6 +120,8 @@ Confirm:
 **Test passes?** You're testing existing behavior. Fix test.
 
 **Test errors?** Fix error, re-run until it fails correctly.
+
+**Reusing an existing failing test?** You already have RED. Confirm it fails for the reason you think before touching the code.
 
 ### GREEN - Minimal Code
 
@@ -167,8 +163,6 @@ Don't add features, refactor other code, or "improve" beyond the test.
 
 ### Verify GREEN - Watch It Pass
 
-**MANDATORY.**
-
 ```bash
 npm test path/to/test.test.ts
 ```
@@ -209,39 +203,66 @@ When writing or changing any test, read [writing-good-tests.md](writing-good-tes
 - Keep test-only code in test utilities, out of production classes
 - Understand a dependency's side effects before mocking it
 
+## Alternatives When There Is No Behavior To Assert
+
+A change with no assertable behavior gets the honest alternative, not a fabricated test. A test that only restates the text, or that can only fail when someone edits a deliberate decision, is a change detector: it costs maintenance forever and catches nothing. Verify with the alternative and **say what it does not cover**.
+
+| Change | Alternative verification | What it does not verify |
+|--------|--------------------------|-------------------------|
+| Copy, comments, docs | Render or read it in context; build if it feeds a build | Anything beyond the text you looked at |
+| Styling, layout | Build + static checks + before/after screenshot | Behavior under interaction, edge-case states |
+| Configuration, manifests | Schema/key lint, or load and parse it | Values correct for the target environment |
+| Generated output | Regenerate and diff the artifact | Hand-written code mixed into the output |
+| Hard to automate | A documented manual reproduction: exact steps, observed result | Regression protection - evidence for this run only |
+
+"No test is possible" is never a reason to skip verification, only a reason to name the alternative, say plainly which parts you did not verify, and stop short of claiming behavior that alternative never exercised. If the change later turns out to have assertable behavior, TDD applies to that part after all.
+
+## Reusing a Failing Test
+
+A failing test that already covers the bug is your RED: confirm it fails for the reason you think, then go straight to the fix and back to green - don't rewrite it or write a second one beside it.
+
+**Passing evidence is reusable too**, while the code, dependencies, environment, and versions it covered are unchanged - it survives further messages, not later edits. Re-run only what something invalidates:
+
+- You changed the code the evidence covers
+- Dependencies, toolchain, or environment changed, or the version under test changed
+- The evidence was partial and you are now claiming more than it supports
+
+To prove a regression test really catches the bug: pass with the fix, revert the fix and watch it fail, restore and watch it pass - stronger than watching it pass once. Scope and validity rules: `superpowers:verification-before-completion`.
+
 ## Common Rationalizations
 
 | Excuse | Reality |
 |--------|---------|
-| "Too simple to test" | Simple code breaks. Test takes 30 seconds. |
+| "Too simple to test" | Simple behavior breaks. If it is behavior, the test takes 30 seconds. If it is prose or config, it belongs in the alternative path instead. |
 | "I'll test after" | Tests written after pass immediately — which proves nothing. They may test the wrong thing, test the implementation instead of the behavior, or miss the edge case you forgot. You never watched it fail, so you never proved it can catch the bug. Test-first forces that failure. |
 | "Tests after achieve same goals (spirit not ritual)" | Tests-after answer "what does this do?"; tests-first answer "what should this do?" Tests written after are biased by the code you already wrote — you verify the cases you remembered, not the ones you'd have discovered. Coverage without proof the tests work. |
-| "Already manually tested" | Manual testing is ad-hoc: no record of what you covered, no way to re-run it when the code changes, easy to forget cases under pressure. "Worked when I tried it" ≠ comprehensive. Automated tests run the same way every time. |
+| "Already manually tested it" | For prose, styling, or config that can be the honest verification — say so and say what it does not cover. For behavior, manual testing is ad-hoc: no record of what you covered, no way to re-run it when the code changes, easy to forget cases under pressure. |
 | "Deleting X hours is wasteful" | Sunk cost fallacy — that time is already spent either way. The real choice: rewrite with TDD (high confidence) vs. keep it and bolt tests on after (low confidence, likely bugs). Keeping code you can't trust is the waste. |
 | "Keep as reference, write tests first" | You'll adapt it. That's testing after. Delete means delete. |
 | "Need to explore first" | Fine. Throw away exploration, start with TDD. |
 | "Test hard = design unclear" | Listen to test. Hard to test = hard to use. |
-| "TDD will slow me down" | TDD IS the pragmatic path: catches bugs before commit, prevents regressions, lets you refactor without fear. "Pragmatic" shortcuts mean debugging in production — slower, not faster. |
-| "Manual test faster" | Manual doesn't prove edge cases. You'll re-test every change. |
-| "Existing code has no tests" | You're improving it. Add tests for existing code. |
+| "TDD will slow me down" | TDD IS the pragmatic path: catches bugs before commit, prevents regressions, lets you refactor without fear. "Pragmatic" shortcuts on behavior work mean debugging in production — slower, not faster. |
+| "Existing code has no tests" | You're improving it. Add tests for the behavior you touch. |
+| "No test is possible, so nothing to verify" | Different claim. Pick the alternative that actually applies and name what it misses. |
+| "This change is prose/config, so the rules don't apply" | Correct — and then the alternative path applies to it. Exempting the change exempts nothing from verification. |
 
 ## Red Flags - STOP and Start Over
 
+On behavior work:
 - Code before test
 - Test after implementation
 - Test passes immediately
 - Can't explain why test failed
 - Tests added "later"
 - Rationalizing "just this once"
-- "I already manually tested it"
 - "Tests after achieve the same purpose"
 - "It's about spirit not ritual"
 - "Keep as reference" or "adapt existing code"
 - "Already spent X hours, deleting is wasteful"
-- "TDD is dogmatic, I'm being pragmatic"
-- "This is different because..."
 
-**All of these mean: Delete code. Start over with TDD.**
+**On behavior work, these mean: Delete code. Start over with TDD.**
+
+**A fix that failed twice is its own signal:** stop stacking patches and re-investigate with `superpowers:systematic-debugging` - the cause is not what you assumed, and no amount of TDD ceremony on the wrong hypothesis will help.
 
 ## Example: Bug Fix
 
@@ -282,18 +303,18 @@ Extract validation for multiple fields if needed.
 
 ## Verification Checklist
 
-Before marking work complete:
+For behavior work, before marking it complete:
 
-- [ ] Every new function/method has a test
-- [ ] Watched each test fail before implementing
+- [ ] Every new function/method that has behavior has a test
+- [ ] Watched each test fail before implementing - or reused a failing test that already covered the bug
 - [ ] Each test failed for expected reason (feature missing, not typo)
 - [ ] Wrote minimal code to pass each test
-- [ ] All tests pass
+- [ ] The tests around the change pass
 - [ ] Output pristine (no errors, warnings)
 - [ ] Tests use real code (mocks only if unavoidable)
 - [ ] Edge cases and errors covered
 
-Can't check all boxes? You skipped TDD. Start over.
+Can't check all boxes on behavior work? You skipped TDD. Start over. A change with no assertable behavior is checked instead by the alternative verification it got and what that alternative does not cover.
 
 ## When Stuck
 
@@ -303,18 +324,20 @@ Can't check all boxes? You skipped TDD. Start over.
 | Test too complicated | Design too complicated. Simplify interface. |
 | Must mock everything | Code too coupled. Use dependency injection. |
 | Test setup huge | Extract helpers. Still complex? Simplify design. |
+| Test can only fail when someone edits a decision | That is a change detector, not a test - assert the behavior that depends on the decision |
 
 ## Debugging Integration
 
-Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix and prevents regression.
+Bug found? Check first whether a failing test already reproduces it - reuse that one. Otherwise write it, follow the TDD cycle, and let the test prove the fix and prevent the regression.
 
-Never fix bugs without a test.
+Don't fix a behavior bug without a test that fails for it, unless you are on the alternative path and have said what that path leaves unverified.
 
 ## Final Rule
 
 ```
-Production code → test exists and failed first
-Otherwise → not TDD
+Behavior work → test exists and failed first (or was already failing)
+Non-behavior work → an honest alternative, and what it does not cover
+Otherwise → not verified
 ```
 
-No exceptions without your human partner's permission.
+Prototypes and code you genuinely cannot exercise are the exception, with your human partner's agreement.

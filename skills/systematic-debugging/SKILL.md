@@ -1,15 +1,22 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: Use when something behaves unexpectedly and the cause is not yet established - a bug, test failure, crash, or performance problem. Choose the investigation depth from the evidence you have. Not for explanations, lookups, or read-only analysis.
 ---
 
 # Systematic Debugging
 
+## Flow fit
+
+- **Levels:** B, C, and D. Not A - explaining, looking something up, or reading code to answer a question is not debugging.
+- **Lightweight path:** when the cause is already evidenced, skip the phase ceremony and run reproduce → evidence → smallest fix → targeted verification.
+- **Skip when:** nothing is behaving unexpectedly, or you are doing a bounded read-only investigation to classify a task rather than to fix it.
+- **Non-negotiables:** no fix without located evidence or a testable hypothesis; two failed fixes means stop and re-investigate instead of stacking a third patch.
+- **Don't skip it because:** the issue looks simple (simple bugs have causes too), you are in a hurry (rushing guarantees rework), or someone wants it fixed NOW (systematic is faster than thrashing). Urgency changes what you are willing to call evidence - it never changes whether the cause is known.
+- **When the cause is already evidenced** — you can point at the line, the log, or the failing test — the lightweight path is `reproduce → evidence → smallest fix → targeted verification`; the four phases below are the full process for an unknown cause, several components, or a fix that already failed. Say which one you are on in one line, and let new evidence move you between them.
+
 ## Overview
 
-**Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
-
-**Violating the letter of this process is violating the spirit of debugging.**
+**Core principle:** find the cause before attempting fixes - a symptom fix is not a fix.
 
 ## The Iron Law
 
@@ -17,37 +24,21 @@ description: Use when encountering any bug, test failure, or unexpected behavior
 NO FIXES WITHOUT ROOT CAUSE INVESTIGATION FIRST
 ```
 
-If you haven't completed Phase 1, you cannot propose fixes.
+"Investigation" scales with the evidence you have: a located cause satisfies it, a guess does not.
 
 ## When to Use
 
-Use for ANY technical issue:
-- Test failures
-- Bugs in production
-- Unexpected behavior
-- Performance problems
-- Build failures
-- Integration issues
+Use whenever the actual behavior differs from the expected behavior and the cause is not yet established: test failures, bugs in production, unexpected behavior, performance problems, build failures, integration issues.
 
-**Use this ESPECIALLY when:**
-- Under time pressure (emergencies make guessing tempting)
-- "Just one quick fix" seems obvious
-- You've already tried multiple fixes
-- Previous fix didn't work
-- You don't fully understand the issue
+**Take the full process when** fixes have already failed, you don't fully understand the issue, the failure crosses component boundaries, or time pressure and "just one quick fix" are pushing you to guess. **Stay on the lightweight path when** you can name the cause, point at your evidence, and the change is contained and reversible.
 
-**Don't skip when:**
-- Issue seems simple (simple bugs have root causes too)
-- You're in a hurry (rushing guarantees rework)
-- Manager wants it fixed NOW (systematic is faster than thrashing)
+## The Four Phases (full process)
 
-## The Four Phases
+This is the path for an unknown cause. Each phase earns the next one: don't propose fixes before Phase 1 has produced evidence, and don't move on by assertion.
 
-You MUST complete each phase before proceeding to the next.
+### Phase 1: Investigation
 
-### Phase 1: Root Cause Investigation
-
-**BEFORE attempting ANY fix:**
+**Before proposing a fix, you need evidence for what is actually wrong.** Steps 1 and 2 are what the lightweight path keeps; the rest is for when the cause is still unclear.
 
 1. **Read Error Messages Carefully**
    - Don't skip past errors or warnings
@@ -169,12 +160,11 @@ You MUST complete each phase before proceeding to the next.
 
 **Fix the root cause, not the symptom:**
 
-1. **Create Failing Test Case**
-   - Simplest possible reproduction
-   - Automated test if possible
-   - One-off test script if no framework
-   - MUST have before fixing
-   - Use the `superpowers:test-driven-development` skill for writing proper failing tests
+1. **Get a Failing Test Case**
+   - If a failing test already covers this, reuse it - don't rewrite it
+   - Otherwise: simplest possible reproduction, automated test if possible, one-off test script if no framework
+   - For behavior defects this is what proves the fix; use the `superpowers:test-driven-development` skill for writing proper failing tests
+   - When the defect can't be automated (copy, styling, config, generated output), use the honest alternative and say what it does not cover
 
 2. **Implement Single Fix**
    - Address the root cause identified
@@ -189,13 +179,15 @@ You MUST complete each phase before proceeding to the next.
    - Use the `superpowers:verification-before-completion` skill before claiming success
 
 4. **If Fix Doesn't Work**
-   - STOP
-   - Count: How many fixes have you tried?
-   - If < 3: Return to Phase 1, re-analyze with new information
-   - **If ≥ 3: STOP and question the architecture (step 5 below)**
-   - DON'T attempt Fix #4 without architectural discussion
+   - STOP - do not stack another patch on top
+   - Count: how many fixes have you tried?
+   - First fix failed: return to Phase 1 and re-analyze with the new information
+   - **Two or more fixes failed: this is an escalation trigger.** Stop patching, re-investigate the problem from the evidence, and re-classify the task - the cause is not what you assumed, and the scope may be larger than you thought. That is not by itself evidence of an architecture problem, and it does not authorize a refactor
+   - **Three or more fixes failed:** the accumulating evidence now points at the design. STOP and question the architecture with your human partner before attempting another fix
 
 5. **If 3+ Fixes Failed: Question Architecture**
+
+   The evidence has accumulated, so this is no longer a guess.
 
    **Pattern indicating architectural problem:**
    - Each fix reveals new shared state/coupling/problem in different place
@@ -209,7 +201,7 @@ You MUST complete each phase before proceeding to the next.
 
    **Discuss with your human partner before attempting more fixes**
 
-   This is NOT a failed hypothesis - this is a wrong architecture.
+   At this point it is no longer a failed hypothesis - the evidence points at a wrong architecture.
 
 ## Red Flags - STOP and Follow Process
 
@@ -217,7 +209,7 @@ If you catch yourself thinking:
 - "Quick fix for now, investigate later"
 - "Just try changing X and see if it works"
 - "Add multiple changes, run tests"
-- "Skip the test, I'll manually verify"
+- "Skip the reproduction, I'll verify by hand" (manual verification is legitimate - skipping the *reproduction* is what leaves you guessing)
 - "It's probably X, let me fix that"
 - "I don't fully understand but this might work"
 - "Pattern says X but I'll adapt it differently"
@@ -228,7 +220,8 @@ If you catch yourself thinking:
 
 **ALL of these mean: STOP. Return to Phase 1.**
 
-**If 3+ fixes failed:** Question the architecture (see Phase 4.5)
+**If 2+ fixes failed:** stop and re-investigate; re-estimate the level before you touch the code again.
+**If 3+ fixes failed:** question the architecture (see Phase 4.5)
 
 ## your human partner's Signals You're Doing It Wrong
 
@@ -245,23 +238,25 @@ If you catch yourself thinking:
 
 | Excuse | Reality |
 |--------|---------|
-| "Issue is simple, don't need process" | Simple issues have root causes too. Process is fast for simple bugs. |
+| "Issue is simple, don't need process" | Size alone proves nothing - but an evidenced, contained cause really does need less process. Point at the cause or investigate. |
 | "Emergency, no time for process" | Systematic debugging is FASTER than guess-and-check thrashing. |
 | "Just try this first, then investigate" | First fix sets the pattern. Do it right from the start. |
 | "I'll write test after confirming fix works" | Untested fixes don't stick. Test first proves it. |
 | "Multiple fixes at once saves time" | Can't isolate what worked. Causes new bugs. |
 | "Reference too long, I'll adapt the pattern" | Partial understanding guarantees bugs. Read it completely. |
 | "I see the problem, let me fix it" | Seeing symptoms ≠ understanding root cause. |
-| "One more fix attempt" (after 2+ failures) | 3+ failures = architectural problem. Question pattern, don't fix again. |
+| "One more fix attempt" (after 2+ failures) | 2+ failures is the trigger to stop and re-investigate; 3+ means question the architecture instead of fixing again. |
 
 ## Quick Reference
 
 | Phase | Key Activities | Success Criteria |
 |-------|---------------|------------------|
-| **1. Root Cause** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
+| **1. Investigation** | Read errors, reproduce, check changes, gather evidence | Understand WHAT and WHY |
 | **2. Pattern** | Find working examples, compare | Identify differences |
 | **3. Hypothesis** | Form theory, test minimally | Confirmed or new hypothesis |
-| **4. Implementation** | Create test, fix, verify | Bug resolved, tests pass |
+| **4. Implementation** | Reuse or write the failing test, fix, verify | Bug resolved, tests pass |
+
+The lightweight path covers Phase 1 and Phase 4 for a cause you can already evidence. Phases 2 and 3 are how you get there when you can't.
 
 ## When Process Reveals "No Root Cause"
 
@@ -276,8 +271,10 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 ## Supporting Techniques
 
-These techniques are part of systematic debugging and available in this directory:
+Optional deep dives - load the one that fits the problem you actually have, not all three:
 
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger. Reach for it when the failure surfaces deep in the stack, far from where the bad value originated.
+- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause. Reach for it when the same bad data can re-enter through another path.
+- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling. Reach for it when a test is flaky or timing-dependent.
+
+On the lightweight path you will usually not need any of them. Nothing here is a required step of a debugging pass.

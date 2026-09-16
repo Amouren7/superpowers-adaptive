@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
-const EXTREMELY_IMPORTANT_MARKER = "<EXTREMELY_IMPORTANT>";
+const SUPERPOWERS_MARKER = "<SUPERPOWERS>";
 const BOOTSTRAP_MARKER = "superpowers:using-superpowers bootstrap for pi";
 
 const extensionDir = dirname(fileURLToPath(import.meta.url));
@@ -62,17 +62,19 @@ function getBootstrapContent(): string | null {
 	try {
 		const skillContent = readFileSync(bootstrapSkillPath, "utf8");
 		const body = stripFrontmatter(skillContent);
-		cachedBootstrap = `${EXTREMELY_IMPORTANT_MARKER}
+		cachedBootstrap = `${SUPERPOWERS_MARKER}
 ${BOOTSTRAP_MARKER}
 
-You have superpowers.
+Skills are available on demand: they are tools to load when they help, not a gate you pass before replying.
 
-The using-superpowers skill content is included below and is already loaded for this Pi session. Follow it now. Do not try to load using-superpowers again.
+Classify this task first - A direct, B lightweight fix, C standard development, D full process (new subsystem, architecture change, permissions/money/sensitive data/irreversible migration). Load only the skills the chosen level needs. Do not re-load a skill that is already loaded and unchanged in this session.
+
+The using-superpowers skill content is included below and is already loaded for this Pi session. Follow it now; do not load using-superpowers again.
 
 ${body}
 
 ${piToolMapping()}
-</EXTREMELY_IMPORTANT>`;
+</SUPERPOWERS>`;
 		return cachedBootstrap;
 	} catch {
 		cachedBootstrap = null;

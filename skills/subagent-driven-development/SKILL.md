@@ -1,11 +1,18 @@
 ---
 name: subagent-driven-development
-description: Use when executing implementation plans with independent tasks in the current session
+description: Use when executing a plan whose tasks are independent enough that isolated implementer and reviewer context earns its cost - usually C-level multi-task work or D-level risk; small single tasks inside a plan are done directly instead
 ---
 
 # Subagent-Driven Development
 
-Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad whole-branch review at the end.
+## Flow fit
+
+- **Levels:** C at plan scale (several tasks with real review surfaces) and D (risk that warrants independent review). A (answer/read-only) and B (lightweight fix) do not enter this skill.
+- **Lightweight path:** Do the task directly and verify it yourself. A small single-file task inside an otherwise subagent-driven plan is a direct edit plus a targeted test run — no implementer dispatch, no ledger.
+- **Skip when:** there is no plan, the work is one small task, or the tasks are coupled enough that one context should hold all of them.
+- **Non-negotiables:** what you delegate gets reviewed by a different seat than the one that wrote it, and every claim in a report is verified against the diff before it is believed.
+
+Execute plan by dispatching a fresh implementer subagent per task, a task review (spec compliance + code quality) after each, and a broad whole-branch review at the end. That review seat is the point: it buys independent judgement on work whose blast radius justifies the coordination cost. When a task is small and contained, direct execution plus targeted verification is the honest equivalent — the level table in `using-superpowers` is the authority on when this skill applies at all.
 
 **Why subagents:** You delegate tasks to specialized agents with isolated context. By precisely crafting their instructions and context, you ensure they stay focused and succeed at their task. They should never inherit your session's context or history — you construct exactly what they need. This also preserves your own context for coordination work.
 
@@ -14,7 +21,7 @@ Execute plan by dispatching a fresh implementer subagent per task, a task review
 **Narration:** between tool calls, narrate at most one short line — the
 ledger and the tool results carry the record.
 
-**Continuous execution:** Do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are the four named below, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it.
+**Continuous execution:** Once you have taken up a plan this way, do not pause to check in with your human partner between tasks. Execute all tasks from the plan without stopping. The only reasons to stop are the four named below, or all tasks complete. "Should I continue?" prompts and progress summaries waste their time — they asked you to execute the plan, so execute it. Taking up a plan this way starts with the plan's tasks, not with every future edit: a one-line follow-up fix that arrives later is handled at its own level.
 
 **Rulings, not stalls.** A running plan does not wait on a human. Conflicts,
 ambiguities, plan defects, a cap you would have asked to exceed — decide
@@ -83,14 +90,14 @@ digraph process {
         "Append completion to ledger, mark todo complete" [shape=box];
     }
 
-    "Setup: worktree, ledger check, read plan, pre-flight review" [shape=box];
+    "Setup: workspace check, ledger check, read plan, pre-flight review" [shape=box];
     "More tasks remain?" [shape=diamond];
     "Dispatch final code reviewer (../requesting-code-review/code-reviewer.md)" [shape=box];
     "Final findings? ONE fix dispatch, one scoped re-review, adjudicate residuals" [shape=box];
     "Final review clean: delete this plan's workspace" [shape=box];
     "Use superpowers:finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
 
-    "Setup: worktree, ledger check, read plan, pre-flight review" -> "Dispatch implementer subagent (./implementer-prompt.md)";
+    "Setup: workspace check, ledger check, read plan, pre-flight review" -> "Dispatch implementer subagent (./implementer-prompt.md)";
     "Dispatch implementer subagent (./implementer-prompt.md)" -> "Implementer asks questions?";
     "Implementer asks questions?" -> "Answer questions, provide context" [label="yes"];
     "Answer questions, provide context" -> "Implementer implements, tests, commits, self-reviews";
@@ -123,10 +130,11 @@ digraph process {
 
 ## Setup
 
-Ensure the work happens in an isolated workspace: use
-superpowers:using-git-worktrees to create one or verify the existing one.
-Never start implementation on a main/master branch without your human
-partner's explicit consent.
+Ensure the work happens in a workspace suited to it: use
+superpowers:using-git-worktrees when the change needs isolation — parallel
+workstreams, a long plan, or D-level risk — and say so in the ledger when the
+plan genuinely does not need one. Never start implementation on a main/master
+branch without your human partner's explicit consent.
 
 Conversation memory does not survive compaction. In real sessions,
 controllers that lost their place have re-dispatched entire completed task
@@ -228,6 +236,10 @@ its change, send the whole batch to a single subagent, and review its diff
 as one unit. Reserve one-dispatch-per-task for work that needs its own
 judgment, its own tests, or its own review surface.
 
+**Small tasks can be done directly.** A contained edit with an obvious cause and a
+targeted test does not need an implementer seat: make it yourself, run the covering
+test, append a ledger line, move on.
+
 Everything you paste into a dispatch prompt — and everything a subagent
 prints back — stays resident in your context for the rest of the session
 and is re-read on every later turn. Hand artifacts over as files.
@@ -307,11 +319,13 @@ rush it into implementation.
 
 ### 3. Review the task
 
-Per-task reviews are task-scoped gates. The broad review happens once, at the
-final whole-branch review. Never skip the task review, and never accept a
-report missing either verdict — spec compliance AND task quality are both
-required. Implementer self-review never replaces the task review; both are
-needed.
+Per-task reviews are task-scoped gates and run inside this loop: a dispatched
+task is never complete on the implementer's word. The broad review happens
+once, at the final whole-branch review. For a task that went out to an
+implementer, never accept a report missing either verdict — spec compliance
+AND task quality are both required. Implementer self-review never replaces the
+task review; both are needed. A directly-executed task carries its own
+targeted verification instead.
 
 - Hand the reviewer its diff as a file: run this skill's
   `scripts/review-package PLAN_FILE BASE HEAD` and pass the reviewer the file path
@@ -505,7 +519,7 @@ Use superpowers:finishing-a-development-branch.
 ```
 You: I'm using Subagent-Driven Development to execute this plan.
 
-[Setup: worktree verified]
+[Setup: workspace checked — isolated worktree, per this plan's isolation need]
 [Read plan file once: docs/superpowers/plans/feature-plan.md]
 [Resolve workspace: scripts/sdd-workspace docs/superpowers/plans/feature-plan.md — no ledger inside, fresh start]
 [Create todos for all tasks]

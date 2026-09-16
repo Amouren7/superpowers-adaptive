@@ -1,5 +1,7 @@
 # Root Cause Tracing
 
+**Optional deep dive.** Load this when the failure surfaces deep in the stack, far from where the bad value originated - not as a required step of every debugging pass.
+
 ## Overview
 
 Bugs often manifest deep in the call stack (git init in wrong directory, file created in wrong location, database opened with wrong path). Your instinct is to fix where the error appears, but that's treating a symptom.
@@ -151,7 +153,7 @@ digraph principle {
 }
 ```
 
-**NEVER fix just where the error appears.** Trace back to find the original trigger.
+**Don't stop at where the error appears.** When the trace keeps going, follow it back to the original trigger.
 
 ## Stack Trace Tips
 

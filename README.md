@@ -2,6 +2,21 @@
 
 Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
 
+> **Adaptive-flow fork.** This checkout is a fork of [obra/superpowers](https://github.com/obra/superpowers) at `v6.3.0` (b36e082), MIT-licensed, upstream attribution and authorship intact. It replaces *"invoke a skill before any response (1% rule)"* with a short, task-level process choice: **A** direct · **B** lightweight fix · **C** standard development · **D** full process. The design/debugging/testing/verification skills and the high-risk guardrails are unchanged in substance; what changed is when they are required. See [Adaptive process levels](#adaptive-process-levels) below.
+
+## Adaptive process levels
+
+Classify by **impact, blast radius, reversibility, clarity of the request, and evidence you already have** — not by file count or by the user calling something "simple".
+
+| Level | Use for | Process | Not required |
+|---|---|---|---|
+| **A — Direct** | explanations, lookups, read-only analysis, copy edits | answer, or do the small thing | no development workflow |
+| **B — Lightweight fix** | known behavior, contained scope, evidenced cause, reversible | expected vs actual → locate cause → smallest change → targeted verification → report | no design/plan documents, no worktree, no review subagents, no second "go ahead" when the fix was already requested |
+| **C — Standard** | ordinary features, several touch points, a few design trade-offs | short approach plus the steps that matter; design/plan/TDD/review as needed | no re-interviewing; reuse existing designs and plans |
+| **D — Full** | new subsystems, architecture shifts, important interfaces or data models; permissions, money, sensitive data, irreversible migrations | full design, the confirmations that matter, written plan, tests, review | no per-step re-confirmation; confirm only what is undecided or unauthorized |
+
+Escalation (scope grows, cause unknown, verification insufficient, two failed fixes) means re-investigate and re-classify — not "keep patching". De-escalation is allowed for process you have not yet executed, with one line saying why. Follow-up work inherits the existing design, plan, and authorization. Skills load on demand, and a skill already loaded and unchanged in the session is not read again. The six invariants that never move with the level are in `skills/using-superpowers/SKILL.md`.
+
 ## Table of Contents
 
 - [How it works](#how-it-works)
@@ -32,15 +47,15 @@ Superpowers is a complete software development methodology for your coding agent
 
 ## How it works
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do. 
+It starts from the moment you fire up your coding agent — with a classification, not a ceremony. Low-risk work (a question, a lookup, a copy fix) is answered directly. A contained fix with a known cause gets the smallest change plus targeted verification, and no design documents. Only when the task is genuinely a feature, an architecture change, or a high-risk change does the agent step back and ask what you're really trying to do.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
+When it does, once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
 
 After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
 
 Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for your agent to work autonomously for a couple hours at a time without deviating from the plan you put together.
 
-There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
+There's a bunch more to it, but that's the core of the system. Because the entry point is loaded at session start, your agent knows which process level a task needs and loads the matching skills on demand — you don't need to do anything special.
 
 ## Commercial Services
 

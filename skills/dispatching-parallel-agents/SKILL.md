@@ -1,9 +1,16 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+description: Use when several independent workstreams can run at once without sharing files or state - one agent per problem domain; not for a single contained fix or for related failures that one investigator should handle together
 ---
 
 # Dispatching Parallel Agents
+
+## Flow fit
+
+- **Levels:** C and D — independent workstreams, sized so coordination stays cheaper than doing the work. A (answer/read-only) and B (lightweight fix) do not enter this skill.
+- **Lightweight path:** Dispatch is a means, not a requirement. One workstream means no dispatch — do the fix yourself, dispatch a single agent, or make the lone contained edit yourself; it is not a fan-out.
+- **Skip when:** the work shares files or state, the pieces are related, or you do not yet know what is broken (investigate first, then decide).
+- **Non-negotiables:** independence is real, not assumed — no two dispatches may edit the same files; and you verify the combined result yourself rather than trusting each agent's summary. Dispatches modify the repo, so they stay inside the authorization you actually have.
 
 ## Overview
 

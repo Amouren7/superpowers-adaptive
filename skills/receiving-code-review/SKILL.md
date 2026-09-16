@@ -1,6 +1,6 @@
 ---
 name: receiving-code-review
-description: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
+description: Use when review feedback arrives and you are about to implement it - calibrates investigation depth to the comment's blast radius while keeping the rigor (verify first, push back with evidence, no performative agreement); not for feedback on trivial wording you can simply accept
 ---
 
 # Code Review Reception
@@ -18,18 +18,29 @@ WHEN receiving code review feedback:
 
 1. READ: Complete feedback without reacting
 2. UNDERSTAND: Restate requirement in own words (or ask)
-3. VERIFY: Check against codebase reality
-4. EVALUATE: Technically sound for THIS codebase?
-5. RESPOND: Technical acknowledgment or reasoned pushback
-6. IMPLEMENT: One item at a time, test each
+3. SIZE IT: How far does this comment reach? (see "Investigation Depth")
+4. VERIFY: Check against codebase reality - to the depth step 3 warrants
+5. EVALUATE: Technically sound for THIS codebase?
+6. RESPOND: Technical acknowledgment or reasoned pushback
+7. IMPLEMENT: One item at a time, test each
 ```
+
+## Investigation Depth
+
+| Comment reaches | Do |
+|-----------------|-----|
+| Wording, naming, formatting, a local style preference | Apply it and move on — no codebase survey. If it is genuinely wrong or the codebase convention differs, say so in one line |
+| Behavior, an interface, a data shape, a shared helper | Verify against the codebase before implementing: what calls it, what breaks, what the current implementation was doing |
+| Architecture, security, money, permissions, data loss, or a public contract | Full verification, and involve your human partner on anything that conflicts with prior decisions |
+
+**Inherited context.** Feedback on work already in flight inherits the design, plan, and authorization behind it — handle the delta. Do not re-open settled decisions, re-derive the design, or restart the requirements interview because a comment arrived; re-design only when the comment changes the scope.
 
 ## Forbidden Responses
 
 **NEVER:**
 - "You're absolutely right!" (explicit instruction-file violation)
 - "Great point!" / "Excellent feedback!" (performative)
-- "Let me implement that now" (before verification)
+- "Let me implement that now" (before you have sized the comment)
 
 **INSTEAD:**
 - Restate the technical requirement
@@ -41,10 +52,13 @@ WHEN receiving code review feedback:
 
 ```
 IF any item is unclear:
-  STOP - do not implement anything yet
-  ASK for clarification on unclear items
+  ASK about the unclear items before implementing them
 
-WHY: Items may be related. Partial understanding = wrong implementation.
+IF the unclear item blocks others:
+  STOP - do not implement the rest yet
+  WHY: Items may be related. Partial understanding = wrong implementation.
+
+Otherwise implement the clear ones and say which item you are asking about.
 ```
 
 **Example:**
@@ -52,7 +66,7 @@ WHY: Items may be related. Partial understanding = wrong implementation.
 your human partner: "Fix 1-6"
 You understand 1,2,3,6. Unclear on 4,5.
 
-❌ WRONG: Implement 1,2,3,6 now, ask about 4,5 later
+❌ WRONG: Guess at 4,5 and hope, or silently skip them
 ✅ RIGHT: "I understand items 1,2,3,6. Need clarification on 4 and 5 before proceeding."
 ```
 
@@ -66,7 +80,7 @@ You understand 1,2,3,6. Unclear on 4,5.
 
 ### From External Reviewers
 ```
-BEFORE implementing:
+BEFORE implementing, for anything above a local edit:
   1. Check: Technically correct for THIS codebase?
   2. Check: Breaks existing functionality?
   3. Check: Reason for current implementation?
@@ -101,14 +115,16 @@ IF reviewer suggests "implementing properly":
 
 ```
 FOR multi-item feedback:
-  1. Clarify anything unclear FIRST
+  1. Clarify anything unclear FIRST (unless it is independent - see above)
   2. Then implement in this order:
      - Blocking issues (breaks, security)
      - Simple fixes (typos, imports)
      - Complex fixes (refactoring, logic)
-  3. Test each fix individually
+  3. Verify each fix in proportion to what it touches
   4. Verify no regressions
 ```
+
+Verification stays real at every depth — what scales down is ceremony, never evidence. Never delete a test, weaken an assertion, or swallow a failure to make a comment look addressed.
 
 ## When To Push Back
 
@@ -166,8 +182,8 @@ State the correction factually and move on.
 | Mistake | Fix |
 |---------|-----|
 | Performative agreement | State requirement or just act |
-| Blind implementation | Verify against codebase first |
-| Batch without testing | One at a time, test each |
+| Blind implementation | Verify against codebase first — to the depth the comment warrants |
+| Batch without testing | One at a time, verify each in proportion to its reach |
 | Assuming reviewer is right | Check if breaks things |
 | Avoiding pushback | Technical correctness > comfort |
 | Partial implementation | Clarify all items first |
@@ -193,13 +209,11 @@ Reviewer: "Implement proper metrics tracking with database, date filters, CSV ex
 ✅ "Grepped codebase - nothing calls this endpoint. Remove it (YAGNI)? Or is there usage I'm missing?"
 ```
 
-**Unclear Item (Good):**
-```
-your human partner: "Fix items 1-6"
-You understand 1,2,3,6. Unclear on 4,5.
-✅ "Understand 1,2,3,6. Need clarification on 4 and 5 before implementing."
-```
-
 ## GitHub Thread Replies
 
 When replying to inline review comments on GitHub, reply in the comment thread (`gh api repos/{owner}/{repo}/pulls/{pr}/comments/{id}/replies`), not as a top-level PR comment.
+
+## Flow fit
+
+- **Levels / Lightweight path / Skip when:** applies whenever feedback arrives — usually C/D work, and B when your human partner reviews a fix after the fact; one item with local reach means apply it, verify what it touches, and report; skip when the comment is pure wording you already agree with, or duplicates a decision made in this session.
+- **Non-negotiables:** verify before implementing anything that reaches behavior, and never green-wash a finding — no deleted tests, weakened assertions, or swallowed failures.

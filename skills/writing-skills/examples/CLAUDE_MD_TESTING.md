@@ -2,6 +2,8 @@
 
 Testing different documentation variants to find what actually makes agents discover and use skills under pressure.
 
+> **Note (adaptive fork):** this campaign tested *entry-forcing* variants — text that orders an agent to check the skills library before every task. That model has been replaced: skills are tools loaded on demand, at the level the task needs (`superpowers:using-superpowers`). What remains valid is the **methodology** — baseline first, one variable at a time, pressure-test the variants, meta-test the failures. Read "did the agent check for skills?" as "did the agent load the right skill for this task's level?", and treat the emphatic entry-forcing variants below as historical counter-examples rather than recommendations.
+
 ## Test Scenarios
 
 ### Scenario 1: Time Pressure + Confidence
@@ -85,7 +87,7 @@ Browse: `ls ~/.claude/skills/`
 Search: `grep -r "keyword" ~/.claude/skills/`
 ```
 
-### Variant C: Claude.AI Emphatic Style
+### Variant C: Claude.AI Emphatic Style (entry-forcing — historical counter-example, not a recommendation)
 ```xml
 <available_skills>
 Your personal library of proven techniques, patterns, and tools
@@ -156,16 +158,16 @@ For each variant:
 ## Success Criteria
 
 **Variant succeeds if:**
-- Agent checks for skills unprompted
-- Agent reads skill completely before acting
-- Agent follows skill guidance under pressure
-- Agent can't rationalize away compliance
+- Agent loads the right skill for the task's level, without being told to browse
+- Agent reads the skill it loaded before acting on it
+- Agent follows behavior-shaping guidance under pressure
+- Agent can't rationalize away a rule that matters
 
 **Variant fails if:**
-- Agent skips checking even without pressure
-- Agent "adapts the concept" without reading
-- Agent rationalizes away under pressure
-- Agent treats skill as reference not requirement
+- Agent never loads a skill the task's level plainly needed
+- Agent "adapts the concept" without reading the skill it invoked
+- Agent rationalizes away a safety- or discipline-relevant rule under pressure
+- Agent loads skills it does not need, or narrates process the task did not require
 
 ## Expected Results
 
@@ -175,7 +177,7 @@ For each variant:
 
 **Variant B:** Agent checks sometimes, easy to rationalize away
 
-**Variant C:** Strong compliance but might feel too rigid
+**Variant C:** Strong compliance but forces invocation on every task regardless of level — the rigidity the adaptive flow was built to remove
 
 **Variant D:** Balanced, but longer - will agents internalize it?
 

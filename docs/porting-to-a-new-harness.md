@@ -48,11 +48,11 @@ into the harness's native tools. Three components:
 
 3. **Bootstrap (per-harness).** At the start of every session, the full
    `skills/using-superpowers/SKILL.md` is injected into the model's context,
-   wrapped in `<EXTREMELY_IMPORTANT>` tags, with the tool mapping appended. That
-   injected skill is what teaches the model that skills exist and that it must
-   check for a relevant skill before acting. **The bootstrap is the entire
-   integration.** Without it, the skill files are inert — present on disk, never
-   invoked.
+   wrapped in `<SUPERPOWERS>` tags, with the tool mapping appended. That injected
+   skill is what teaches the model that skills exist, how to classify the task
+   (A/B/C/D), and that it should load the skills the chosen level needs. **The
+   bootstrap is the entire integration.** Without it, the skill files are inert —
+   present on disk, never invoked.
 
 ### Two rules that make this work
 
@@ -350,7 +350,7 @@ ones in spirit:
 ### Step 3 — Wire the bootstrap injection
 
 This is the heart of the port. The shared goal: at session start, get the
-`using-superpowers` skill content (wrapped in `<EXTREMELY_IMPORTANT>` tags) plus
+`using-superpowers` skill content (wrapped in `<SUPERPOWERS>` tags) plus
 the harness's tool mapping in front of the model, with a note that the skill is
 already active so the model doesn't try to load it again. *How* you do that —
 and what you assemble vs. what the harness loads raw — depends entirely on your
@@ -358,8 +358,9 @@ shape. Do **not** apply one shape's recipe to another.
 
 **Shape A — a script reads `SKILL.md` and prints the harness's JSON.** The
 dispatched script (`hooks/session-start`) `cat`s the whole `SKILL.md` (frontmatter
-included — that's fine; it's emitted verbatim), wraps it with the "You have
-superpowers… for all other skills use the Skill tool" preamble, escapes it, and
+included — that's fine; it's emitted verbatim), wraps it with the adaptive
+preamble (classify A/B/C/D, load only what the level needs, the entry skill is
+already loaded, "for all other skills use the Skill tool"), escapes it, and
 prints the harness's JSON shape. The tool mapping for Shape A does **not** go
 inline here — it lives in `references/<harness>-tools.md` (Step 4). Get the JSON
 output shape exactly right. `hooks/session-start`
@@ -409,12 +410,12 @@ real branch.
 
 **Shape B — assemble the string in code, then inject as a user message.** Here
 you build the bootstrap yourself: read `SKILL.md`, strip its YAML frontmatter,
-and assemble `<EXTREMELY_IMPORTANT>` + a short preamble that the skill is already
-loaded and must not be re-invoked + the stripped body + the inline tool mapping +
-`</EXTREMELY_IMPORTANT>`. One subtlety the references disagree on: OpenCode's
-preamble says "do NOT use the skill tool…" (assumes a `skill` tool exists), while
-pi's just says "do not try to load using-superpowers again." If your harness has
-no skill tool, use pi's wording, not OpenCode's.
+and assemble `<SUPERPOWERS>` + a short preamble (classify A/B/C/D, load only what
+the level needs, the skill is already loaded and must not be re-invoked) + the
+stripped body + the inline tool mapping +
+`</SUPERPOWERS>`. OpenCode, pi and Hermes now share the same preamble wording;
+keep it that way when you add a harness, so the entry point stays identical
+across integrations.
 
 Inject the result as a **user-role message, not a system message** — system
 messages bloat tokens when repeated every turn (#750) and multiple system
@@ -423,9 +424,9 @@ messages break some models (#894). Three things you must replicate:
 - **Dedup guard.** The lifecycle callback can fire repeatedly (OpenCode's
   transform runs on *every* agent step; pi's `context` fires per turn). Before
   injecting, check whether a bootstrap marker is already present and skip if so.
-  (The references pick different markers — pi a custom string, OpenCode the
-  `EXTREMELY_IMPORTANT` tag; matching the tag is more robust since it needs no
-  harness-specific constant.) Cache the bootstrap content at module level so
+  Every integration keys on the `<SUPERPOWERS>` tag (pi also keeps its own
+  `superpowers:using-superpowers bootstrap for pi` string), so matching the tag is
+  the portable choice. Cache the bootstrap content at module level so
   you're not re-reading and re-parsing `SKILL.md` on every call (#1202).
 - **Compaction.** If the harness compacts/summarizes history, re-inject
   afterward. pi sets an `injectBootstrap` flag on `session_start` and
@@ -546,7 +547,7 @@ honors the rule rather than breaking it. Distinguish three cases:
      it's softer than injection. Make sure the mapping is reachable from what the
      model loads — e.g. linked from `SKILL.md`'s Platform Adaptation section and
      installed alongside the skills — not just sitting in the repo.
-   - **There's no structural guarantee the trigger fires.** No `<EXTREMELY_IMPORTANT>`
+   - **There's no structural guarantee the trigger fires.** No `<SUPERPOWERS>`
      wrapper, no dedup, no re-injection after compaction — firing depends on the
      model choosing to act on a description it sees in the index. This is exactly
      why the acceptance test is mandatory here: it is the *only* guarantee, so run
@@ -557,7 +558,7 @@ honors the rule rather than breaking it. Distinguish three cases:
    available skills, so on its own the model won't know which skills exist or
    their triggers. You must supply a discovery path. Two options, and they differ
    in durability: (a) generate a skill index (each `skills/*/SKILL.md`'s `name` +
-   `description` frontmatter) and place it *inside* the `<EXTREMELY_IMPORTANT>`
+   `description` frontmatter) and place it *inside* the `<SUPERPOWERS>`
    wrapper alongside the tool mapping (Shape B recipe above) so it's covered by
    the dedup guard — but a build-time index goes stale as skills are added; or
    (b) instruct the model to list `skills/*/SKILL.md` at runtime and read their
@@ -694,18 +695,19 @@ Then:
     session), that is the strongest clean bootstrap: declare it, and the installer
     preserves it *and* the harness loads it. Generate it at install time from the
     live `using-superpowers/SKILL.md` + the tool mapping (wrapped in
-    `<EXTREMELY_IMPORTANT>`) so the installed bootstrap never drifts. This is what
+    `<SUPERPOWERS>`) so the installed bootstrap never drifts. This is what
     `.antigravity-plugin/install.sh` does — `agy plugin install` reports
     `✔ context : ANTIGRAVITY.md`, and a clean session reads `using-superpowers`'s
-    SKILL.md, loads `brainstorming`, and enters the brainstorming flow before any
+    SKILL.md, classifies the task, and loads the matching skills before writing
     code. **Verify with a marker** that the installer keeps the file and the
     harness loads it: one porter wrongly concluded it couldn't, because they
     shipped the file *without* declaring `contextFileName` and it was stripped as
     unrecognized.
   - **Otherwise lean on the installed `using-superpowers` skill itself.** If the
     harness surfaces each installed skill's name + description at session start,
-    the `using-superpowers` description ("Use when starting any conversation…")
-    can prompt the model to load it — installing the skill *is* the bootstrap.
+    the `using-superpowers` description ("Use when you need to choose a working
+    process for a task…") can prompt the model to load it — installing the skill
+    *is* the bootstrap.
     Softer (no guaranteed wrapper; it carries triggering but not the tool mapping
     — see Step 5), so prefer the declared context file when available.
   - If neither works, the harness cannot be cleanly supported yet — **say so**

@@ -1,5 +1,7 @@
 # Condition-Based Waiting
 
+**Optional deep dive.** Load this when a test is flaky or timing-dependent - not as a required step of ordinary debugging.
+
 ## Overview
 
 Flaky tests often guess at timing with arbitrary delays. This creates race conditions where tests pass on fast machines but fail under load or in CI.
@@ -28,8 +30,7 @@ digraph when_to_use {
 - Waiting for async operations to complete
 
 **Don't use when:**
-- Testing actual timing behavior (debounce, throttle intervals)
-- Always document WHY if using arbitrary timeout
+- Testing actual timing behavior (debounce, throttle intervals) - an arbitrary timeout is the right tool there, and documenting WHY it is justified
 
 ## Core Pattern
 

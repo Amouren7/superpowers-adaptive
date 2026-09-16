@@ -4,6 +4,8 @@
 
 Good Skills are concise, well-structured, and tested with real usage. This guide provides practical authoring decisions to help you write Skills that agents can discover and use effectively.
 
+> **Scope note (this fork):** this is upstream guidance reproduced for reference. Where it prescribes a fixed process or a fixed amount of testing, the adaptive levels in `superpowers:using-superpowers` decide how much a given change actually needs — evaluation count and model coverage scale with the behavioral risk of the change, not with the fact that a skill file was edited. On descriptions, this fork follows the stricter rule in `SKILL.md` (trigger conditions only, no workflow summary): a description that summarizes the workflow lets an agent act on the summary and skip the body.
+
 For conceptual background on how Skills work, see the [Skills overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview).
 
 ## Core principles
@@ -139,7 +141,7 @@ Skills act as additions to models, so effectiveness depends on the underlying mo
 * **Claude Sonnet** (balanced): Is the Skill clear and efficient?
 * **Claude Opus** (powerful reasoning): Does the Skill avoid over-explaining?
 
-What works perfectly for Opus might need more detail for Haiku. If you plan to use your Skill across multiple models, aim for instructions that work well with all of them.
+What works perfectly for Opus might need more detail for Haiku. If you plan to use your Skill across multiple models, aim for instructions that work well with all of them. Run the full matrix when a model difference could change the outcome — for a formatting fix or a reference addition, one model is enough to confirm the skill still reads correctly.
 
 ## Skill structure
 
@@ -1128,9 +1130,11 @@ Before sharing a Skill, verify:
 
 ### Testing
 
-* [ ] At least three evaluations created
-* [ ] Tested with Haiku, Sonnet, and Opus
-* [ ] Tested with real usage scenarios
+Scale these to what the change can affect:
+
+* [ ] One evaluation exists — three or more when the change shapes behavior under pressure
+* [ ] Tested at the levels you actually support — the full model matrix only when a model difference could change the outcome
+* [ ] Tested with real usage scenarios, not quizzes
 * [ ] Team feedback incorporated (if applicable)
 
 ## Next steps

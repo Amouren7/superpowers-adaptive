@@ -86,15 +86,17 @@ When skills request actions, substitute OpenCode equivalents:
 
 Use OpenCode's native \`skill\` tool to list and load skills.`;
 
-    _bootstrapCache = `<EXTREMELY_IMPORTANT>
-You have superpowers.
+    _bootstrapCache = `<SUPERPOWERS>
+Skills are available on demand: they are tools to load when they help, not a gate you pass before replying.
 
-**IMPORTANT: The using-superpowers skill content is included below. It is ALREADY LOADED - you are currently following it. Do NOT use the skill tool to load "using-superpowers" again - that would be redundant.**
+Classify this task first - A direct, B lightweight fix, C standard development, D full process (new subsystem, architecture change, permissions/money/sensitive data/irreversible migration). Load only the skills the chosen level needs. Do not re-load a skill that is already loaded and unchanged in this session.
+
+The using-superpowers skill content is included below and is ALREADY LOADED for this session. Follow it now; do not load using-superpowers again.
 
 ${content}
 
 ${toolMapping}
-</EXTREMELY_IMPORTANT>`;
+</SUPERPOWERS>`;
 
     return _bootstrapCache;
   };
@@ -130,7 +132,7 @@ ${toolMapping}
       // Guard: skip if first user message already contains bootstrap.
       // This prevents double injection when OpenCode passes an already
       // transformed in-memory message array through the hook again.
-      if (firstUser.parts.some(p => p.type === 'text' && p.text.includes('EXTREMELY_IMPORTANT'))) return;
+      if (firstUser.parts.some(p => p.type === 'text' && p.text.includes('<SUPERPOWERS>'))) return;
 
       const ref = firstUser.parts[0];
       firstUser.parts.unshift({ ...ref, type: 'text', text: bootstrap });
