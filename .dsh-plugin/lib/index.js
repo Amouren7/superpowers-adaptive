@@ -47,6 +47,21 @@ function readEntry() {
   }
 }
 
+/**
+ * Subagent sessions inherit global prompt contexts, but the entry opens with
+ * <SUBAGENT-STOP> and tells a dispatched subagent to ignore it — so injecting it there
+ * only costs tokens (roughly 2k per subagent). The assembly context carries the live
+ * agent at runtime even though the published `AssembleContext` type does not declare it,
+ * so read it defensively: anything unreadable means "not a subagent".
+ */
+function isSubagent(assemblyContext) {
+  const agent = assemblyContext && assemblyContext.agent
+  if (!agent) return false
+  const meta = agent.meta || (agent.session && agent.session.meta)
+  const depth = meta && typeof meta.delegationDepth === 'number' ? meta.delegationDepth : 0
+  return depth > 0
+}
+
 export function apply(ctx) {
   const first = readEntry()
   if (!first.ok) {
@@ -58,7 +73,8 @@ export function apply(ctx) {
     name: CONTEXT_NAME,
     order: CONTEXT_ORDER,
     // 每次装配重新读取：编辑已安装的入口技能后，新会话立即生效，不需要重载插件
-    text: () => {
+    text: (assemblyContext) => {
+      if (isSubagent(assemblyContext)) return ''
       const now = readEntry()
       return now.ok ? now.text : ''
     },

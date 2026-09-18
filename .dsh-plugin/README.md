@@ -10,6 +10,10 @@ The entry text is **not** copied into this package: the plugin reads it at assem
 
 If the entry file is missing, the plugin logs a warning and injects nothing — a session still starts normally.
 
+**Subagents are skipped.** The entry opens with `<SUBAGENT-STOP>` and tells a dispatched subagent to ignore it, so contributing it there would only cost tokens (~2k per subagent). The plugin reads the live agent from the assembly context and returns nothing when `delegationDepth > 0`; anything unreadable means "not a subagent", so a shape change degrades to the old behaviour rather than to a missing entry. A subagent *forked from* a session whose history already carries the snapshot still sees it there — that is fork inheritance, not injection.
+
+`../verification/check-dsh-plugin.mjs` exercises the shipped `lib/index.js` against a fake context: registration, root injection, the subagent skip, and that the injected text matches the installed skill (8/8 PASS).
+
 ## Why not a hook
 
 DSH ships `@deepseek-ai/dsh-hooks-claude-code`, which runs Claude Code hook configs on DSH's interception seams, so this integration was first built as a `SessionStart` (and then `UserPromptSubmit`) hook config. Measured on this machine (DSH `0.1.5-rc.1`, bridge `0.1.5-rc.2`):

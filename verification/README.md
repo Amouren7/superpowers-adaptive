@@ -13,6 +13,7 @@ The checks behind the table in the root [README](../README.md). Everything here 
 | `check-scenarios-v2.mjs <arm>` | evaluate each criterion offline (filesystem deltas, message assertions, `cmd_pass`, and `test_log` — evidence a test actually ran) and verify the freeze manifest | Node |
 | `injection-size.mjs` | measure what the session-start hook injects, by really executing it | Node + Git Bash |
 | `retally-tokens.mjs` | recompute the token breakdown from raw metrics (uncached input / cache read / cache write / output kept separate — they have different prices and are never summed) | Node |
+| `check-dsh-plugin.mjs` | exercise the shipped `.dsh-plugin/lib/index.js` against a fake context: one registered prompt context, root-agent injection, the subagent skip (`delegationDepth > 0`), and that the injected text matches the installed skill | Node |
 | `check-scenarios.mjs`, `make-compare.mjs` | the adaptive.1-era equivalents, with the corrected token reporting | Node |
 
 ## Layout

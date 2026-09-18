@@ -232,7 +232,10 @@ a2 数值更小，但**主要因为 T03 少做了一件事**（没有实施计�
 |---|---|
 | 热注入后当前 web 会话 | 该会话上下文里**直接出现** `<SUPERPOWERS>` + 完整入口（本机实时可见） |
 | 新的 headless 会话（`dsh --profile headless`，exit=0） | 让它逐字引用入口里 "No ceremony" 段落 → **原句正确引用**，证明第一轮就在上下文中 |
+| 插件本体单元检查（`verification/check-dsh-plugin.mjs`，对着**发布的** `lib/index.js`） | **8/8 PASS**：只注册一个 prompt context（`superpowers:adaptive-entry`，order 200）；主代理拿到 7,387 字符且含 `<SUPERPOWERS>`；装配上下文读不到 agent 时按主会话处理（不误伤）；`delegationDepth=1` 的子代理拿到空串；注入内容包含已安装入口技能的开头（两边不会漂移） |
 | web / headless 两个 profile | 均已写入 `dependencies` + `bundles`；依赖指向**仓库里的** `.dsh-plugin/`，插件运行实例已确认从该路径加载 |
+
+**子代理与成本**：入口自带 `<SUBAGENT-STOP>`，让被派发的子代理忽略它，所以插件在 `delegationDepth > 0` 时不贡献内容（每个子代理省约 2k token），这条由上面的单元检查验证。**现场拿子代理实测时它仍然看得见入口** —— 但那个子代理是从**已经带有该快照的会话**派生出来的（fork 继承历史），不是插件在注入；现场测试无法把这两者区分开，因此没有按"已实测跳过"来写。
 
 **过程中踩到并记录的两个坑**：
 
