@@ -113,7 +113,11 @@ node verification/install-drill.mjs <archive.zip>           # install/restore dr
 node verification/setup-scenarios-v2.mjs                    # freeze the scenarios
 node verification/run-scenario-v2.mjs a3 all                # needs `dsh --profile headless` + credentials
 node verification/check-scenarios-v2.mjs a3                 # evaluate the criteria offline
+node verification/make-skill-packages.mjs                   # one archive per skill, SKILL.md at the root
+node verification/check-skill-packages.mjs                  # verify those archives
 ```
+
+Some skill platforms require `SKILL.md` at the **package root**, which the repository tree does not satisfy (skills live at `skills/<name>/`). `make-skill-packages.mjs` writes one archive per skill in that shape plus an entry bundle; `check-skill-packages.mjs` confirms each archive is byte-identical to `skills/` and that packaging introduced no dangling links.
 
 The runner isolates itself: its own `DSH_HOME`, an empty `DSH_AGENTS_HOME`, and skills installed into the scenario's own `.dsh/skills`. It never touches an installed plugin.
 
@@ -243,7 +247,11 @@ node verification/install-drill.mjs <archive.zip>           # 安装/恢复演�
 node verification/setup-scenarios-v2.mjs                    # 固化场景与判据
 node verification/run-scenario-v2.mjs a3 all                # 需要 dsh --profile headless 与凭据
 node verification/check-scenarios-v2.mjs a3                 # 离线校验判据
+node verification/make-skill-packages.mjs                   # 每个技能一个包，SKILL.md 在包根
+node verification/check-skill-packages.mjs                  # 校验这些技能包
 ```
+
+有些技能平台要求 **`SKILL.md` 在包根目录**，而仓库树是 `skills/<名字>/`，不满足这个校验。`make-skill-packages.mjs` 会按"一个技能一个包"重打成符合要求的归档（另有一个入口整包）；`check-skill-packages.mjs` 校验每个包的内容与 `skills/` 逐字节一致，并确认打包没有引入新的悬空链接。
 
 运行器自带隔离：独立 `DSH_HOME`、空 `DSH_AGENTS_HOME`、技能只装进场景自己的 `.dsh/skills`，**不会碰你已安装的插件**。
 

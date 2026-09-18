@@ -47,7 +47,7 @@ Give it the range and the requirements. Not your reasoning, not your session —
 - Fix Critical issues immediately
 - Fix Important issues before proceeding
 - Note Minor issues for later
-- Adjudicate before acting — verify a finding rather than implementing it because it was said ([receiving-code-review](../receiving-code-review/SKILL.md))
+- Adjudicate before acting — verify a finding rather than implementing it because it was said (see `superpowers:receiving-code-review`)
 
 ## Example
 
